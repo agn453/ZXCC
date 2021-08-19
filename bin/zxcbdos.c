@@ -12,12 +12,12 @@
 
 void bdos_rdline(word line, word *PC)
 {
-	char *buf;
+	unsigned char *buf;
 
 	if (!line) line = cpm_dma;
 	else RAM[line + 1] = 0;
 
-	buf = (char *)&RAM[line];
+	buf = (unsigned char *)&RAM[line];
 
 	if (cpm_bdos_10(buf)) *PC = 0;
 }

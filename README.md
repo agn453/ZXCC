@@ -43,5 +43,7 @@ command options that require filenames.  It now accepts the following
 * The linker (zxlink) should use the renamed HI-TECH linker
 (now linq.com).
 
+* Fix compilation warnings
+
 
 Tony Nicholson 19-Aug-2021
