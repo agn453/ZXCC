@@ -30,7 +30,7 @@
 # endif
 #endif
 
-static void update (int n, int c, char *s);
+static void update (int n, int c, unsigned char *s);
 
 static unsigned int console_mode = 0;
 static char delimiter = '$';
@@ -127,7 +127,7 @@ int cpm_bdos_9(char *buf)
 
 
 
-static void update (int n, int c, char *s);
+static void update (int n, int c, unsigned char *s);
 
 /* Under DOS, line input uses the DOS line input */
 #ifdef __MSDOS__
@@ -336,7 +336,7 @@ int cpm_bdos_set_get_typeahead(int flag)
 
 /* Additional functions */
 
-static void update (int n, int c, char *s)
+static void update (int n, int c, unsigned char *s)
 {
         while (c--) cpm_conout(8);
         while (*s && (n--)) cpm_conout(*(s++));
