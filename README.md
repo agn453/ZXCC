@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This is John Eliott's CP/M 2/3 emulator for cross-compiling and
+This is John Elliott's CP/M 2/3 emulator for cross-compiling and
 running CP/M tools under MS-DOS and Linux/Unix/macOS.
 
 This repository has been initially extracted from John Elliott's
