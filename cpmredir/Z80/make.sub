@@ -1,0 +1,16 @@
+m80g =lsdir.z80
+m80g =mount.z80
+m80g =umount.z80
+m80g =chdir.z80
+m80g =mkdir.z80
+m80g =rmdir.z80
+m80g =dparse.z80
+m80g =dpcmd.z80
+m80g =fstype.z80
+link chdir,fstype,dpcmd,dparse
+link mkdir,fstype,dpcmd,dparse
+link rmdir,fstype,dpcmd,dparse
+link lsdir,fstype
+link mount
+link umount
+

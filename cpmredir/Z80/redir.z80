@@ -1,0 +1,107 @@
+	.z80
+	cseg
+
+FCB	EQU	005Ch
+FDOS	EQU	5
+CR	EQU	0Dh
+LF	EQU	0Ah
+EOF	EQU	1Ah
+
+	DEFB	0EBh,04h	;DOS protection... JMPS LABE
+	EX	DE,HL
+	JP	BEGIN
+	DEFB	0B4h,09h	;DOS protection... MOV AH,9
+	DEFB	0BAh
+	DEFW	BVMES		;DOS protection... MOV DX,OFFSET BVMES
+	DEFB	0CDh,021h	;DOS protection... INT 21h.
+	DEFB	0CDh,020h	;DOS protection... INT 20h.
+
+	DEFB	cr,'REDIR v1.00 (c) John Elliott',cr,lf
+	DEFB	'Date: 00/00/00',cr,lf,eof
+;
+	DSEG
+BVMES:	DEFB	'This program requires CP/M 3 and a Z80 processor',cr,lf,'$'
+	CSEG
+
+BEGIN:	SUB	A
+	JP	PE,BADVER
+	LD	C,0Ch
+	CALL	FDOS
+	CP	30h
+	JR	NC,MAIN
+BADVER:	LD	DE,BVMES
+	LD	C,9
+	JP	FDOS
+;
+	extrn CPMOPT, PRINT
+
+MAIN:	ld	hl,80h
+	ld	e,(hl)
+	ld	d,h
+	inc	hl
+	ex	de,hl	;DE=81h
+	add	hl,de
+	ld	(hl),0
+	ex	de,hl	;HL=81h
+	ld	de,opts
+	ld	iy,optr
+	call	CPMOPT
+	ld	de,initrs
+	ld	c,3Ch
+	call	FDOS
+	cp	0FFh
+	jr	nz,ldok
+	ld	de,initf
+	call	print
+	ld	c,6Ch
+	ld	de,0FF00h
+	call	FDOS
+	rst	0
+;
+ldok:	ld	de,lded$
+	call	print
+	rst	0
+
+
+help:	ld	de,help$
+	call	print
+exit:	ld	de,delrsx
+	ld	c,3Ch
+	call	FDOS
+	rst	0
+;
+unload:	ld	de,delall
+	ld	c,3Ch
+	call	FDOS
+	ld	de,deled$
+	call	print
+	rst	0
+
+	dseg
+lded$:	defb	'REDIR has loaded.',cr,lf,'$'
+initf:	defb	'REDIR has failed to initialise properly.',cr,lf,'$'
+deled$:	defb	'REDIR has unloaded.',cr,lf,'$'
+
+help$:	defb	'REDIR     loads the redirection module.',cr,lf
+	defb	'REDIR [U] unloads it and reclaims the memory it used.',cr,lf,'$'
+
+opts:	defb	4,'HELP', 1,'H', 1,'?'
+	defb	1,'U',0
+optr:	defw	help,help,help
+	defw	unload
+
+delall:	defb	7Fh,1
+	defw	magic
+
+delrsx:	defb	7Eh,1
+	defw	magic
+
+initrs:	defb	79h,1
+	defw	magic
+;
+magic:	defb	'REDIRECT'
+
+	cseg
+
+
+

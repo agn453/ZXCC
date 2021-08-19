@@ -1,0 +1,340 @@
+	.z80
+	cseg
+;
+FCB	EQU	005Ch
+FDOS	EQU	5
+CR	EQU	0Dh
+LF	EQU	0Ah
+EOF	EQU	1Ah
+;
+BASE:	DEFB	0EBh,04h	;DOS protection... JMPS LABE
+	EX	DE,HL
+	JP	BEGIN
+	DEFB	0B4h,09h	;DOS protection... MOV AH,9
+	DEFB	0BAh
+	DEFW	BVMES		;DOS protection... MOV DX,OFFSET BVMES
+	DEFB	0CDh,021h	;DOS protection... INT 21h.
+	DEFB	0CDh,020h	;DOS protection... INT 20h.
+
+	DEFB	cr,'LSDIR v1.00 (c) John Elliott',cr,lf
+	DEFB	'Date: 05/12/1998',cr,lf,eof
+;
+	DSEG
+BVMES:	DEFB	'This program requires CP/M 3+ and a Z80 processor.',cr,lf,'$'
+	CSEG
+
+BEGIN:	SUB	A
+	JP	PE,BADVER	;Weed out 8080 CPUs
+	LD	C,0Ch
+	CALL	FDOS
+	CP	30h		;Weed out non-CP/M 3 versions
+     	JR      NC,MAIN
+BADVER:	LD	DE,BVMES
+	LD	C,9
+	JP	FDOS
+;
+
+	ext	fstype
+
+main:	ld	de,scbpb
+	ld	c,31h
+	call	fdos	;Get screen height
+	ld	(scrh),a
+	ld	de,scbpb2
+	ld	c,31h
+	call	fdos
+	ld	(page),a
+	ld	a,(5ch)
+	or	a
+	jr	z,curdrv
+	dec	a
+	ld	e,a
+	ld	c,0Eh
+	call	fdos
+curdrv:	ld	c,19h
+	call	fdos
+	add	a,'A'
+	ld	(drvn),a
+	call	fstype
+	or	a
+	jr	z,fst1
+	ld	a,0ffh
+fst1:	ld	(fs),a
+	ld	a,(5dh)
+	cp	' '
+	jr	nz,fcbok
+	ld	hl,5dh
+	ld	d,h
+	ld	e,l
+	inc	de
+	ld	bc,10
+	ld	(hl),'?'
+	ldir
+fcbok:	ld	de,buf
+	ld	c,1Ah
+	call	fdos
+	call	getlabel
+	ld	hl,5ch
+	ld	a,(fs)
+	or	a
+	jr	z,srccpm
+	set	7,(hl)
+srccpm:	ex	de,hl
+	ld	hl,0	;Count
+	ld	c,11h
+findl:	push	hl
+	call	fdos
+	pop	hl
+	cp	4
+	jp	nc,endl
+	push	hl
+	ld	l,a
+	ld	h,0
+	add	hl,hl	;*2
+	add	hl,hl	;*4
+	add	hl,hl	;*8
+	add	hl,hl	;*16
+	add	hl,hl	;*32
+	ld	de,buf
+	add	hl,de
+	ld	a,(ldone)
+	or	a
+	call	z,showlbl
+	call	showfcb
+	call	extinf
+	call	crlf
+	pop	hl
+	inc	hl
+	ld	c,12h
+	jr	findl
+;
+endl:	ld	a,h
+	or	l
+	jp	nz,0
+	ld	de,nofil$
+	ld	c,9
+	call	fdos
+	rst	0
+;
+getlabel:
+	ld	c,11h
+labelp:	ld	de,qfcb
+	call	fdos
+	cp	4
+	ret	nc
+	ld	h,0	;HL=file no.
+	add	hl,hl	;*2
+	add	hl,hl	;*4
+	add	hl,hl	;*8
+	add	hl,hl	;*16
+	add	hl,hl	;*32
+	ld	de,buf
+	add	hl,de
+	ld	a,(hl)
+	cp	20h	;Label?
+	ld	c,12h
+	jr	nz,labelp
+	ld	de,label
+	ld	bc,32
+	ldir
+	scf
+	ret
+;
+showlbl:
+	push	af
+	push	bc
+	push	de
+	push	hl
+	ld	de,lb1$
+	ld	c,9
+	call	fdos
+	ld	a,(label)
+	cp	20h
+	jr	nz,nolb
+	ld	hl,label
+	call	showfcb
+	jr	prlb1
+
+nolb:	ld	de,nolb$
+	ld	c,9
+	call	fdos
+prlb1:	ld	a,(fs)
+	or	a
+	ld	de,cpmm
+	jr	z,prlb2
+	ld	de,dosm
+prlb2:	ld	c,9
+	call	fdos
+	call	crlf
+	call	crlf
+	ld	a,1
+	ld	(ldone),a
+	pop	hl
+	pop	de
+	pop	bc
+	pop	af
+	ret
+;
+	dseg
+lb1$:	defb	'The disc in drive '
+drvn:	defb	'X: is $'
+nolb$:	defb	'untitled$'
+cpmm:	defb	'  (CP/M filesystem)$'
+dosm:	defb	'  (host filesystem)$'
+	cseg
+;
+showfcb:
+	push	af
+	push	bc
+	push	de
+	push	hl
+	ld	b,11
+sflp:	inc	hl
+	ld	e,(hl)
+	res	7,e
+	push	hl
+	push	bc
+	ld	c,2
+	call	fdos
+	pop	bc
+	ld	a,b
+	cp	4
+	jr	nz,sflp2
+	push	bc
+	ld	c,2
+	ld	e,' '
+	call	fdos
+	pop	bc
+sflp2:	pop	hl
+	djnz	sflp
+	pop	hl
+	pop	de
+	pop	bc
+	pop	af
+	ret
+;
+crlf:	ld	c,2
+	ld	e,0Dh
+	call	fdos
+	ld	c,2
+	ld	e,0Ah
+	call	fdos
+	ld	a,(line)
+	inc	a
+	ld	(line),a
+	ld	hl,scrh
+	cp	(hl)
+	ret	c
+	xor	a
+	ld	(line),a
+	ld	de,more$
+	ld	c,9
+	call	fdos
+	ld	e,0FDh
+	ld	c,6
+	call	fdos
+	push	af
+	ld	de,morec
+	ld	c,9
+	call	fdos
+	pop	af
+	cp	3
+	jp	z,0
+	ret
+;
+extinf:	push	af
+	push	bc
+	push	de
+	push	hl	;HL->FCB
+	pop	ix	;IX->FCB
+	push	hl
+	ld	bc,fs	;Filesystem type
+	ld	de,dir
+	ld	hl,ndir
+	ld	a,(bc)
+	and	(ix+16)
+	bit	6,a
+	call	cprint
+	ld	de,ro
+	ld	hl,nro
+	bit	7,(ix+9)
+	call	cprint
+	ld	de,sys
+	bit	7,(ix+10)
+	call	cprint
+	ld	de,arc
+	bit	7,(ix+11)	
+	call	cprint
+	ld	a,(bc)
+	and	(ix+16)
+	bit	5,a
+	ld	de,hid
+	call	cprint
+	ld	de,f1
+	ld	hl,nf1
+	bit	7,(ix+1)
+	call	cprint
+	ld	de,f2
+	bit	7,(ix+2)
+	call	cprint
+	ld	de,f3
+	bit	7,(ix+3)
+	call	cprint
+	ld	de,f4
+	bit	7,(ix+4)
+	call	cprint
+	pop	hl
+	pop	de
+	pop	bc
+	pop	af
+	ret
+
+cprint:	push	bc
+	push	hl
+	push	ix
+	push	af
+	push	hl
+	ld	c,9
+	call	nz,fdos
+	pop	de
+	pop	af
+	call	z,fdos
+	pop	ix
+	pop	hl
+	pop	bc
+	ret
+;
+	dseg
+dir:	defb	'  <DIR>$'
+ndir:	defb	'       $'
+ro:	defb	'  R/O$'
+sys:	defb	'  SYS$'
+narc:
+nro:
+nhid:
+nsys:	defb	'     $'
+arc:	defb	'  ARC$'
+hid:	defb	'  HID$'
+f1:	defb	'  F1$'
+f2:	defb	'  F2$'
+f3:	defb	'  F3$'
+f4:	defb	'  F4$'
+nf1:	defb	'    $'
+fs:	defb	0
+buf:	defs	80h
+qfcb:	defb	'?????????????'
+	defs	 17h
+label:	defs	20h
+ldone:	defb	0
+nofil$:	defb	'No file.',0Dh,0Ah,'$'
+scrh:	defb	0
+page:	defb	0
+line:	defb	0
+scbpb:	defw	001Ch	;Screen height
+scbpb2:	defw	002Ch	;Page mode
+more$:	defb	'[More]$'
+morec:	defb	8,8,8,8,8,8,'      ',8,8,8,8,8,8,'$'
+	cseg
+
+	END
+

@@ -1,0 +1,135 @@
+;
+;    CPMREDIR: CP/M filesystem redirector
+;    Copyright (C) 1998, John Elliott <jce@seasip.demon.co.uk>
+;
+;    This library is free software; you can redistribute it and/or
+;    modify it under the terms of the GNU Library General Public
+;    License as published by the Free Software Foundation; either
+;    version 2 of the License, or (at your option) any later version.
+;
+;    This library is distributed in the hope that it will be useful,
+;    but WITHOUT ANY WARRANTY; without even the implied warranty of
+;    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+;    Library General Public License for more details.
+;
+;    You should have received a copy of the GNU Library General Public
+;    License along with this library; if not, write to the Free
+;    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+;
+;    This file is source for an example RSX showing how CPMREDIR can be 
+;    called from a CP/M 3 emulator with a Z80 BDOS.
+
+;
+; RSX header
+;
+	.z80
+	cseg
+
+base:	defs	6		;Serial number
+	jp	catch		;Entry point
+fdos:	jp	0		;Link to next RSX
+prev:	defw	0		;Link to previous RSX
+delete:	defw	0		;Set to 0FFh to delete this RSX
+rname:	defb	'REDIRECT'	;RSX name
+	defb	0,0,0		;Reserved
+;
+;Data used by CPMREDIR.
+;
+drives:	defb	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+dpbs:	defs	0110h
+dname:	defs	40		;Buffer for directory name
+
+catch:	ld	a,c		;BDOS function ID
+	cp	03Ch		;"Communicate with RSX"
+	jp	z,rsxctl
+;
+;When this RSX is first loaded, it is inactive. The following instruction 
+;will be NOPped out when the RSX is initialised.
+;
+block:	jp	fdos	
+;
+;Emulator "trap" routine. It should return Carry set to pass the call
+;through to the BDOS, or Carry clear to return.
+;
+	scf
+	ld	a,0FCh
+	ld	hl,base	;This RSX
+	defb	0EDh,0FEh
+;
+	jp	c,fdos
+	ret
+;
+;"Communicate with RSX" call - code to delete this RSX. This is 8-bit code
+;so that even if the RSX isn't run in an emulator, it can be deleted.
+;
+rsxctl:	push	de		;DE -> RSXPB
+	ld	h,d
+	ld	l,e		;Hl -> function number
+	inc	hl
+	ld	a,(hl)		;HL -> No. of parameters
+	cp	1		;Must only take 1 parameter
+	jp	nz,pdfdos	
+	inc	hl
+	ld	e,(hl)
+	inc	hl
+	ld	d,(hl)		;DE = parameter 1 (should be the RSX name)
+	ld	hl,rname
+	ld	b,8
+idrlp:	ld	a,(de)
+	cp	(hl)		;Is it the RSX name?
+	jr	nz,pdfdos
+	inc	de
+	inc	hl
+	djnz	idrlp	
+;
+;This call is for this RSX.
+;
+	pop	de
+	ld	a,(de)		;Function number
+	cp	79h
+	jr	z,initme	;79h: Initialise RSX
+	cp	7Eh
+	jr	z,delme		;7Eh: Delete this copy of this RSX
+	cp	7Fh
+	jr	z,delall	;7Fh: Delete all copies of this RSX
+	jp	block
+;
+pdfdos:	pop	de
+	jp	block
+;
+delme:	ld	a,0FFh		;Delete this RSX.
+	ld	(delete),a
+ret0:	xor	a
+	ld	l,a
+	ld	h,a
+	ld	b,a	
+	ret
+;
+delall:	ld	a,0FFh		;Delete all copies of this RSX.
+	ld	(delete),a
+	call	fdos
+	jr	ret0
+;
+initme:	push	de
+	call	fdos		;Returns A=0 if there's another RSX like this 
+	pop	de		;Higher Up.
+	or	a
+	jr	z,delme		;Prevent multiple loads of this RSX.
+
+	ld	c,3Ch
+        ld      a,0FCh		;Initialise the emulation library.
+        ld      hl,base		;This RSX
+        defb    0EDh,0FEh
+
+	xor	a
+	ld	h,a
+	ld	l,a		;Return 0.
+	ld	b,a
+	ld	(block),hl	;Remove the "block" instruction
+	ld	(block+2),a
+	ret
+;
+
+	end
+
+

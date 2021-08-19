@@ -1,0 +1,138 @@
+;
+;    CPMREDIR: CP/M filesystem redirector
+;    Copyright (C) 1998, John Elliott <jce@seasip.demon.co.uk>
+;
+;    This library is free software; you can redistribute it and/or
+;    modify it under the terms of the GNU Library General Public
+;    License as published by the Free Software Foundation; either
+;    version 2 of the License, or (at your option) any later version.
+;
+;    This library is distributed in the hope that it will be useful,
+;    but WITHOUT ANY WARRANTY; without even the implied warranty of
+;    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+;    Library General Public License for more details.
+;
+;    You should have received a copy of the GNU Library General Public
+;    License along with this library; if not, write to the Free
+;    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+;
+;  Parse a filename. Works like the usual function 152 but also accepts "."
+;  and "..". Enter with DE->PFCB.
+	
+	.z80
+	cseg
+
+dparse::
+	ld	a,(de)	;DE -> DW filename DW fcb_destination
+	ld	l,a
+	inc	de
+	ld	a,(de)
+	ld	h,a	;HL = address of ASCII filename
+	dec	de
+	ld	a,(hl)	;Does it start "."?
+	cp	'.'
+	jr	nz,func152
+	inc	hl
+	ld	a,(hl)
+	call	echar	;Is it "."<end> ?
+	jr	z,onedot
+	cp	'.'
+	jr	nz,func152
+	inc	hl
+	ld	a,(hl)	;Is it ".."<end>?
+	call	echar
+	jr	z,twodots
+	ld	hl,0ffffh	;Invalid
+	ret
+;
+onedot:	call	zfcb		;Empty the FCB
+	call	getfcb		;BC -> FCB
+	inc	bc
+	push	af
+	ld	a,'.'		;Set name to "."
+	ld	(bc),a
+	jr	endp
+;
+twodots:
+	call	zfcb		;Empty the FCB
+	call	getfcb
+	inc	bc
+	push	af		;Set name to ".."
+	ld	a,'.'
+	ld	(bc),a
+	inc	bc
+	ld	(bc),a
+endp:	pop	af		;If EOL encountered, return 0. Else
+	cp	0Dh		;return pointer to next character in line.
+	jr	z,eol
+	cp	0
+	jr	z,eol
+	ret			;HL = correct return value
+;
+eol:	ld	hl,0
+	ret	
+;
+zfcb:	push	af		;Reset FCB to "empty" values
+	push	hl
+	push	de
+	ex	de,hl
+	inc	hl
+	inc	hl
+	ld	e,(hl)
+	inc	hl
+	ld	d,(hl)	;DE->FCB
+	ld	h,d
+	ld	l,e
+	inc	de
+	push	de	;Fill FCB with zeroes
+	ld	bc,35
+	ld	(hl),b
+	ldir
+	pop	hl
+	ld	d,h	;Fill 'name' field with spaces
+	ld	e,l
+	inc	de
+	ld	bc,10
+	ld	(hl),' '
+	ldir	
+	pop	de
+	pop	hl
+	pop	af
+	ret	
+;
+getfcb:	push	af	;LD BC, (DE+2)
+	push	de
+	ex	de,hl
+	inc	hl
+	inc	hl
+	ld	c,(hl)
+	inc	hl
+	ld	b,(hl)	;BC->FCB
+	pop	de
+	pop	af
+	ret	
+;
+func152:
+	ld	c,152
+	jp	5
+;
+echar:	push	hl		;Is character in A such a character as to
+	ld	hl,echs		;terminate a filename?
+	ld	b,eche-echs
+echlp:	cp	(hl)
+	jr	z,retz
+	inc	hl
+	djnz	echlp
+	pop	hl
+	and	a	;NZ
+	ret
+;
+retz:	pop	hl
+	ret
+;
+	dseg
+;
+echs:	defb	'[]/=|<> ',9,0Dh,0	;Separators.
+eche:
+	END
+	
