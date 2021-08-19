@@ -232,7 +232,7 @@ int cpm_bdos_10(unsigned char *buffer)
 					if (!prevn) prevn = 19; else --prevn;
 				}
 				n = prev[prevn][0];
-				if (n > buffer[0]); n = buffer[0];
+				if (n > buffer[0]) n = buffer[0];
 				++n;
 				memcpy(buffer + 1, &prev[prevn][0], n);
 				if (curlen > buffer[1]) 

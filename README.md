@@ -23,4 +23,10 @@ You can raise an issue here on GitHub or contact me directly via e-mail
 at <agn453@gmail.com>.
 
 
+## Updates
+
+* An apparent error in the source of the CP/M BDOS function 10 (read
+console buffer) emulation - courtesy of @tsupplis from his repository
+at https://github.com/tsupplis/zxccp
+
 Tony Nicholson 19-Aug-2021
