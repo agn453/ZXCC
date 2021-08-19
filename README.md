@@ -45,5 +45,8 @@ command options that require filenames.  It now accepts the following
 
 * Fix compilation warnings
 
+* Emulation of CP/M BDOS function 60 (call resident system extension)
+should be disabled and return 0xFF in both the A and L registers.
+
 
 Tony Nicholson 19-Aug-2021
