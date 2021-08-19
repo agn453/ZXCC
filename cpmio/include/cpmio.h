@@ -41,7 +41,7 @@ int           cpm_bdos_6(unsigned char c);	/* Direct console access
                                                  * else E-value */
 int           cpm_bdos_9(char *buf);		/* Print a string. Returns
                                                  * -1 for break, else 0 */
-int           cpm_bdos_10(unsigned char *buf);	/* Read a line. 
+unsigned      cpm_bdos_10(unsigned char *buf);	/* Read a line. 
 					 * Note: Calling program has to
                                 	 * deal with DE=0 parameter, and set 
                                  	 * the "current length" to 0 if DE is 
