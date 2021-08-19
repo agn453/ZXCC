@@ -40,5 +40,8 @@ command options that require filenames.  It now accepts the following
   -cr file.crf  Cross-reference listing
 ```
 
+* The linker (zxlink) should use the renamed HI-TECH linker
+(now linq.com).
+
 
 Tony Nicholson 19-Aug-2021
