@@ -29,4 +29,16 @@ at <agn453@gmail.com>.
 console buffer) emulation - courtesy of @tsupplis from his repository
 at https://github.com/tsupplis/zxccp
 
+* The C compiler (zxc) front-end was not accepting HI-TECH C-style
+command options that require filenames.  It now accepts the following
+
+```
+  -e file.com	CP/M executable file name
+  -f file.sym   Symbol-table for debugger or overlay creation
+  -i directory  Include directory (in native format)
+  -m file.map   Linker map file
+  -cr file.crf  Cross-reference listing
+```
+
+
 Tony Nicholson 19-Aug-2021
