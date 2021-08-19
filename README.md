@@ -48,5 +48,8 @@ command options that require filenames.  It now accepts the following
 * Emulation of CP/M BDOS function 60 (call resident system extension)
 should be disabled and return 0xFF in both the A and L registers.
 
+* Change cpm_bdos_10() to return an unsigned result to avoid buffer
+size being interpreted as negative.
 
-Tony Nicholson 19-Aug-2021
+
+Tony Nicholson 20-Aug-2021
