@@ -1,0 +1,173 @@
+CPMREDIR 1.1.1                                      John Elliott, 28 March 2003 
+===============================================================================
+
+  CPMREDIR is a library intended to support the filesystem functions of 
+an emulated CP/M computer, in a Unix or Windows (mingw32) environment. 
+Earlier versions also supported DOS; the source should still compile on DOS, 
+but the autoconf scripts have not been tested on this platform.
+
+Using CPMREDIR
+==============
+
+1.  #include "cpmredir.h" in your source files
+2.  Add libcpmredir.a (libcpmrd.a in DOS) to your link line. 
+
+  If you intend to use CPMREDIR as your emulator's only filesystem, then 
+just call it from your emulated BDOS. CPMREDIR emulates a CP/M 4 BDOS, 
+which should allow most CP/M 2 and 3 programs to run.
+  If you intend to use CPMREDIR as a secondary filesystem, the files
+"sample.c" and "Z80/cpmredir.rsx" may help. They provide a mechanism for 
+CPMREDIR to filter BDOS calls, and decide whether CPMREDIR or the existing
+BDOS should handle them.
+
+  CPMREDIR assumes that it will be able to access the CP/M RAM as a 
+linear range, and therefore addresses will be passed in as pointers. If
+your emulator does not have a linear address space (eg: you are emulating 
+banked memory, or using a segmented architecture) you will have to use 
+"copy in and copy out" techniques in your code. 
+  CPMREDIR does not make any assumptions about your CPU emulation. It should
+be possible for it to work with emulated CP/M-86, though it has only been
+tested with emulated CP/M-80.
+
+  The following functions are provided:  
+
+int fcb_init(void);
+
+	Initialise. Returns 0 if initialisation failed.
+
+void fcb_deinit(void);
+
+	Uninitialise.
+
+void xlt_name(char *localname, char *cpmname);
+
+	  Translate a name from the host FS to a CP/M name. This will (if 
+        necessary) create a mapping between a CP/M drive and a host directory 
+        path. 
+ 	  CP/M drives A: to O: can be mapped in this way. P: is always the 
+        current drive. 
+	  This is intended for parsing command-line arguments.
+
+int xlt_map(int drive, char *localdir);
+
+	  It is sometimes convenient to set some fixed mappings. This will 
+        create a mapping for a given directory.  
+          Pass drive = -1 for "first available", or 0-15 for A: to P:
+          Returns 1 if OK, 0 if requested drive not available. 
+ 
+          NB: It is important that the localname should have a trailing 
+        directory separator (eg: "/usr/lib/cpm/" not "/usr/lib/cpm")
+
+int xlt_umap(int drive);
+
+	  This revokes a mapping. No check is made whether CP/M has files open
+	on the drive or not.
+
+char *xlt_getcwd(int drive);
+
+	  Find out if a drive is mapped, and if so to what directory. If a 
+        drive is not mapped, it returns a blank string.
+
+BDOS functions:
+===============
+
+  As a rule, these functions return a word which should be put in BA and HL.
+Sometimes they return a byte for A and L.
+
+cpm_byte fcb_reset (void);		           /* 0x0D */
+cpm_word fcb_drive (cpm_byte drv);                 /* 0x0E */
+cpm_word fcb_open  (cpm_byte *fcb, cpm_byte *dma); /* 0x0F */
+cpm_word fcb_close (cpm_byte *fcb);		   /* 0x10 */
+cpm_word fcb_find1 (cpm_byte *fcb, cpm_byte *dma); /* 0x11 */
+cpm_word fcb_find2 (cpm_byte *fcb, cpm_byte *dma); /* 0x12 */
+cpm_word fcb_unlink(cpm_byte *fcb, cpm_byte *dma); /* 0x13 */
+cpm_word fcb_read  (cpm_byte *fcb, cpm_byte *dma); /* 0x14 */
+cpm_word fcb_write (cpm_byte *fcb, cpm_byte *dma); /* 0x15 */
+cpm_word fcb_creat (cpm_byte *fcb, cpm_byte *dma); /* 0x16 */
+cpm_word fcb_rename(cpm_byte *fcb, cpm_byte *dma); /* 0x17 */
+cpm_word fcb_logvec(void);                         /* 0x18 */
+cpm_byte fcb_getdrv(void);                         /* 0x19 */
+
+Note: There is no separate "set DMA" call. The DMA address is passed as a
+     parameter to other calls.
+
+cpm_word fcb_getalv(cpm_byte *alv, cpm_word max);  /* 0x1B */
+
+      "Get allocation vector" returns an entirely fictitious allocation vector.
+     The caller must give an address to write it, and available space for it.
+
+cpm_word fcb_rodisk(void);			   /* 0x1C */
+cpm_word fcb_rovec (void);                         /* 0x1D */
+cpm_word fcb_chmod (cpm_byte *fcb, cpm_byte *dma); /* 0x1E */
+cpm_word fcb_getdpb(cpm_byte *dpb);                /* 0x1F */
+
+ 	"Get DPB" writes 17 bytes to memory at "dpb". The DPB is not 
+       terribly realistic.
+
+cpm_byte fcb_user  (cpm_byte usr);		   /* 0x20 */
+
+        User numbers are not emulated, so this call is of little
+       practical use.        
+
+cpm_word fcb_randrd(cpm_byte *fcb, cpm_byte *dma); /* 0x21 */
+cpm_word fcb_randwr(cpm_byte *fcb, cpm_byte *dma); /* 0x22 */
+cpm_word fcb_stat  (cpm_byte *fcb);		   /* 0x23 */
+cpm_word fcb_tell  (cpm_byte *fcb);		   /* 0x24 */
+cpm_word fcb_resro (cpm_word bitmap);	           /* 0x25 */
+
+	The MP/M Access Drives and Free Drives calls are not supported. 
+
+cpm_word fcb_randwz(cpm_byte *fcb, cpm_byte *dma); /* 0x28 */
+
+	The MP/M record locking calls not supported.
+
+cpm_word fcb_multirec(cpm_byte rc);		   /* 0x2C */
+
+	  "Set hardware error action" must be done by the caller.
+        CPMREDIR will always assume the action is "return an error and
+        report no message".
+
+cpm_word fcb_dfree (cpm_byte drive, cpm_byte *dma);/* 0x2E */
+cpm_word fcb_sync  (cpm_byte flag);		   /* 0x30 */
+cpm_word fcb_purge (void);			   /* 0x62 */
+
+	  This call acts just like fcb_sync(0). 
+
+cpm_word fcb_trunc (cpm_byte *fcb, cpm_byte *dma); /* 0x63 */
+cpm_word fcb_setlbl(cpm_byte *fcb, cpm_byte *dma); /* 0x64 */
+
+	  "Set disc label" has no effect.
+
+cpm_word fcb_getlbl(cpm_byte drive);               /* 0x65 */
+cpm_word fcb_date  (cpm_byte *fcb);		   /* 0x66 */
+cpm_word fcb_setpwd(cpm_byte *fcb, cpm_byte *dma); /* 0x67 */
+cpm_word fcb_defpwd(cpm_byte *pwd);                /* 0x6A */
+cpm_word fcb_sdate (cpm_byte *fcb, cpm_byte *dma); /* 0x74 */
+
+	  The "Set date stamp" call as in CP/M-86 4.1 (DOSPLUS).
+
+cpm_word fcb_parse (char     *txt, cpm_byte *fcb); /* 0x98 */
+
+	  fcb_parse() returns the length of the filename parsed, 0 if EOL, 
+        0xFFFF if error. 
+
+Legal bits
+==========
+
+    CPMREDIR: CP/M filesystem emulation library 
+    Copyright (C) 1998-9,2003, John Elliott <jce@seasip.demon.co.uk>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public
+    License along with this library; if not, write to the Free
+    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+

@@ -1,0 +1,58 @@
+;
+;    CPMREDIR: CP/M filesystem redirector
+;    Copyright (C) 1998, John Elliott <jce@seasip.demon.co.uk>
+;
+;    This library is free software; you can redistribute it and/or
+;    modify it under the terms of the GNU Library General Public
+;    License as published by the Free Software Foundation; either
+;    version 2 of the License, or (at your option) any later version.
+;
+;    This library is distributed in the hope that it will be useful,
+;    but WITHOUT ANY WARRANTY; without even the implied warranty of
+;    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+;    Library General Public License for more details.
+;
+;    You should have received a copy of the GNU Library General Public
+;    License along with this library; if not, write to the Free
+;    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+;
+;    This file parses a command line containing one file or directory
+;    name (including "." and "..")
+
+	.z80
+	dseg
+
+dfcb::	defs	36	;FCB the command is parsed into.
+
+pfcb:	defw	0
+	defw	dfcb
+;
+	cseg
+
+	ext	dparse
+
+dpcmd::	ld	e,(hl)
+	ld	d,0
+	ex	de,hl	;DE->command line, HL = length
+	inc	de
+	add	hl,de
+	ld	(hl),0	;0-terminate command line.
+dpcmde::
+	ld	a,(de)
+	inc	de
+	cp	' '		;Skip over spaces
+	jr	z,dpcmde
+	cp	9		;Skip over tabs
+	jr	z,dpcmde
+	or	a
+	ld	hl,0ffffh	;EOL and no FCB was found
+	ret	z
+	dec	de
+	ld	(pfcb),de
+	ld	de,pfcb		;Parse first token in the line.
+	jp	dparse	
+;
+	END
+
+
+

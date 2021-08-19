@@ -1,0 +1,108 @@
+;
+;    CPMREDIR: CP/M filesystem redirector
+;    Copyright (C) 1998, John Elliott <jce@seasip.demon.co.uk>
+;
+;    This library is free software; you can redistribute it and/or
+;    modify it under the terms of the GNU Library General Public
+;    License as published by the Free Software Foundation; either
+;    version 2 of the License, or (at your option) any later version.
+;
+;    This library is distributed in the hope that it will be useful,
+;    but WITHOUT ANY WARRANTY; without even the implied warranty of
+;    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+;    Library General Public License for more details.
+;
+;    You should have received a copy of the GNU Library General Public
+;    License along with this library; if not, write to the Free
+;    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+;
+;    This file is an example of using the CP/M 4 BDOS call "erase directory",
+;    which is supported by CPMREDIR.
+;
+;    Standard prelude to detect CPU and operating system version:
+;  
+	.z80
+	cseg
+;
+FCB	EQU	005Ch
+FDOS	EQU	5
+CR	EQU	0Dh
+LF	EQU	0Ah
+EOF	EQU	1Ah
+;
+BASE:	DEFB	0EBh,04h	;DOS protection... JMPS LABE
+	EX	DE,HL
+	JP	BEGIN
+	DEFB	0B4h,09h	;DOS protection... MOV AH,9
+	DEFB	0BAh
+	DEFW	BVMES		;DOS protection... MOV DX,OFFSET BVMES
+	DEFB	0CDh,021h	;DOS protection... INT 21h.
+	DEFB	0CDh,020h	;DOS protection... INT 20h.
+
+	DEFB	cr,'RMDIR v1.00 (c) John Elliott',cr,lf
+	DEFB	'Date: 05/12/98',cr,lf,eof
+;
+	DSEG
+BVMES:	DEFB	'This program requires CP/M 3+ and a Z80 processor.',cr,lf,'$'
+	CSEG
+
+BEGIN:	SUB	A
+	JP	PE,BADVER	;Weed out 8080 CPUs
+	LD	C,0Ch
+	CALL	FDOS
+	CP	30h		;Weed out non-CP/M 3 versions
+     	JR      NC,MAIN
+BADVER:	LD	DE,BVMES
+	LD	C,9
+	JP	FDOS
+;
+
+	ext	dpcmd, dfcb, fstype
+
+main:
+	ld	hl,80h	;Parse 1st argument to FCB
+	call	dpcmd
+	ld	a,h
+	and	l
+	inc	a
+	jr	z,badcmd
+
+	ld	a,(dfcb+1)	;Can't RMDIR "." or ".."
+	cp	'.'
+	jr	z,badcmd
+
+	call	fstype		;Can't RMDIR on CP/M filesystem
+	jr	z,badfs
+
+	ld	hl,dfcb
+	ld	(hl),80h	;Remove directory on current drive
+	ex	de,hl
+	ld	c,13h		;Do the deed
+	call	5
+	cp	4
+	jr	nc,failed
+	rst	0
+;
+failed:	ld	de,fail$
+	jr	errpr
+;
+badfs:	ld	de,badfs$
+	jr	errpr
+;
+badcmd:	ld	de,badcmd$
+errpr:	ld	c,9
+	call	5		;Quit with error code
+	ld	de,0FF00h
+	ld	c,6Ch
+	call	5
+	rst	0
+;
+	dseg
+fail$:	defb	'Unable to remove directory.',13,10,'$'
+badfs$:	defb	'This operation will not work on a CP/M format drive.',13,10,'$'
+badcmd$:
+	defb	'Syntax:  RMDIR <directory>',13,10,'$'
+
+	END
+
+

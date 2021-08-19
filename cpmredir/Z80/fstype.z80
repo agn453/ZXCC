@@ -1,0 +1,55 @@
+;
+;    CPMREDIR: CP/M filesystem redirector
+;    Copyright (C) 1998, John Elliott <jce@seasip.demon.co.uk>
+;
+;    This library is free software; you can redistribute it and/or
+;    modify it under the terms of the GNU Library General Public
+;    License as published by the Free Software Foundation; either
+;    version 2 of the License, or (at your option) any later version.
+;
+;    This library is distributed in the hope that it will be useful,
+;    but WITHOUT ANY WARRANTY; without even the implied warranty of
+;    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+;    Library General Public License for more details.
+;
+;    You should have received a copy of the GNU Library General Public
+;    License along with this library; if not, write to the Free
+;    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+;
+;    Return A=0 on a CP/M FS, else nonzero - Z and NZ set accordingly.
+;
+
+	.z80
+	cseg
+
+fstype::
+	push	hl
+	push	de
+	push	bc
+	ld	de,80h		;Set DMA to 80h
+	ld	c,1Ah
+	call	5
+	ld	de,dmfcb	;Search for first directory entry. On an
+	ld	c,11h		;alien disc, this will always be the disc
+	call	5		;label.
+	or	a
+	jr	nz,fscpm	;Error. Assume CP/M format.
+	ld	a,(80h)
+	cp	20h		;Is the first entry a disc label?
+	jr	nz,fscpm	;If not, assume CP/M format.
+	ld	a,(8Fh)		;Get FS type byte
+	or	a		;0 => CP/M, otherwise heirarchical.
+	jr	nz,popret
+fscpm:	xor	a	
+popret:	pop	bc
+	pop	de
+	pop	hl
+	ret
+;
+	dseg
+dmfcb:	defb	'?????????????',0,0
+	defs	14h	
+
+	END
+
+

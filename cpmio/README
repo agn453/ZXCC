@@ -1,0 +1,186 @@
+CPMIO 1.1.1                                         John Elliott, 28 March 2003
+===============================================================================
+
+  CPMIO is a library intended to support the console access functions of 
+an emulated CP/M computer, on a Unix box.
+
+  I wrote CPMIO to avoid reinventing wheels. I had written an emulator,
+and wanted to improve its abysmal I/O. This library is the result.
+
+Using CPMIO
+===========
+
+  CPMIO was based on the terminal control functions in MYZ80, making allowances
+for the different screen model of Curses as opposed to the PC.
+
+1.  #include "cpmio.h" in your source files
+2.  Add libcpmio.a to your link line. 
+3.  You will also need to link with the Curses or NCurses libraries.
+
+  The following functions are provided:  
+
+void cpm_scr_init(void);	/* Initialise */
+
+       Call this first; it switches the terminal into raw mode and sets up
+     various variables. If the environment variable CPMTERM is set to the name
+     of a terminal, that terminal will be used; otherwise, the standard 
+     "TERMIOS" terminal will be selected.
+
+void cpm_scr_unit(void);	/* Terminate */
+
+       Call this when your program terminates; it restores the terminal to 
+     the state in which it found it.
+
+char cpm_const(void);		/* Console status */
+char cpm_conin(void);		/* Console input */
+void cpm_conout(char c);	/* Console output */
+
+
+       These functions behave just like the BIOS functions of the same name. 
+     Note that cpm_const() does not attempt to detect whether a program is 
+     repeatedly calling CONST with nothing in between; your program will have 
+     to perform this detection if it needs the functionality.
+
+int           cpm_bdos_1(void);
+int           cpm_bdos_2(char c);
+int           cpm_bdos_6(unsigned char c);
+int           cpm_bdos_9(char *buf);
+int           cpm_bdos_10(char *buf);
+
+        You need to check if DE=0 before calling this function. If it is, then
+      your program must pass in the line at the DMA address; and if it isn't,
+      then it must set buf[1] to 0. 
+
+int           cpm_bdos_11(void);
+unsigned int  cpm_bdos_109(unsigned int de);
+unsigned char cpm_bdos_110(unsigned int de);
+int           cpm_bdos_111(char *buf, unsigned int len);
+
+        All of the functions declared as returning "int" will return -1 if 
+      Control-C was pressed and the emulated program should terminate. Those
+      that don't normally return values (numbers 2, 9, 10 and 111) will 
+      return 0 if Control-C was not pressed.
+
+int cpm_bdos_set_get_typeahead(int flag);
+
+   Call this if the Typeahead flag (byte at SCB + 30h) is changed. You 
+should pass in the new value of this byte, or -1 to read the current value.
+There should not be any need to use this function except in your Get/Set SCB
+emulation.
+
+char *cpm_get_terminal(void);		/* Gets terminal ID */
+int   cpm_set_terminal(char *s);	/* Sets terminal ID, eg "RAW" "VT52" */
+void  cpm_enum_terminals(char *s);	/* List all terminal IDs */
+
+int cpm_term_direct(int function, int param); /* Direct control of terminal */
+
+/* Functions for term_direct: */
+
+#define CPM_TERM_INIT      0	/* Initialise a terminal */
+#define CPM_TERM_GETATTR   1	/* Get bold/reverse etc */
+#define CPM_TERM_SETATTR   2	/* Set bold/reverse etc */
+#define CPM_TERM_GETCOLOUR 3	/* Get screen colour as byte */
+#define CPM_TERM_SETCOLOUR 4	/* Set screen colour as byte */
+#define CPM_TERM_CLEAR     5	/* Clear screen */
+#define CPM_TERM_MOVE      6	/* Move cursor */
+#define CPM_TERM_IFCOLOUR  7	/* Is this a colour screen? */
+#define CPM_TERM_CHAR     20	/* Write character */
+#define CPM_TERM_HEIGHT   60	/* Get/set terminal height */
+#define CPM_TERM_WRAP     61    /* Get/set wrap mode */
+
+
+char *cpm_get_terminal(void);		/* Gets terminal ID */
+
+       CPMIO has multiple terminal emulations. This returns an ASCII string 
+     giving the name of the current terminal.
+
+int   cpm_set_terminal(char *s);	/* Sets terminal ID */
+
+       Select a terminal emulation. CPMIO currently supports:
+
+       "TERMIOS" (default): No emulation. All control sequences are passed 
+                           as-is to the terminal.
+
+       The other emulations use the Curses or NCurses cursor control libraries:
+
+       "RAW"              All characters are passed as-is to the Curses library.
+                        This terminal is only for debugging purposes; it is
+                        unusable as a terminal. 
+       "GENERIC"   }      ANSI-style emulation, based on the emulation in 
+       "ANSI"      }    the MYZ80 emulator. 
+       "VT52"             VT52 emulation, based on the Amstrad PCW terminal.
+
+void  cpm_enum_terminals(char *s);	/* List all terminal IDs */
+
+         Fills a buffer at s with the names of all terminal emulations 
+       supported; each one is terminated with a zero, and the buffer ends 
+       with two zeroes.
+
+int cpm_term_direct(int function, int param); /* Direct control of terminal */
+
+         The following operations are designed so that terminal operations 
+       can be performed irrespective of the current terminal emulation. The 
+       first parameter is the function:
+
+CPM_TERM_INIT:         Initialise the terminal. This is done when the 
+                      terminal is selected and should not need doing again. 
+CPM_TERM_GETATTR:      Return text styles. Bit 0: bright
+                                           Bit 1: underscore
+                                           Bit 2: blink
+                                           Bit 3: reverse 
+CPM_TERM_SETATTR       Select the combination of text styles in "param".
+CPM_TERM_GETCOLOUR     Get the screen colour. Returns foreground in bits 0-3;
+                      background in bits 4-7.
+CPM_TERM_SETCOLOUR     Set the screen colour in "param", as in 
+                      CPM_TERM_GETCOLOUR	
+CPM_TERM_CLEAR         Clear the screen
+CPM_TERM_MOVE          Move the cursor. Bits 7-0 of "param" give X coordinate, 
+                                            15-8 give Y (zero-based)
+CPM_TERM_IFCOLOUR     Return 1 if this is a colour terminal
+CPM_TERM_CHAR         Write "param" as a character. Returns 1 if the screen
+                     should be refreshed, else 0.
+CPM_TERM_HEIGHT       If "param" is -1, return current terminal height. Else
+                     set it to "param".
+CPM_TERM_WRAP         If "param" is -1, return current wrap setting (1=wrap
+                     at end of line, 0=don't). Else set it to "param". 
+
+  These functions are not available for the TERMIOS terminal.
+
+
+More terminals
+==============
+
+  If you want to add an extra terminal (eg: VT220) to CPMIO, do the following:
+
+1. Copy term_vt52.c or term_ansi.c to (eg) term_vt220.c . In this case, 
+  term_ansi.c is obviously the closer match. Rename the term_ansi() function
+  at the bottom to term_vt220(). You can delete the term_generic() function 
+  from this file; it is there because term_ansi contains two almost identical
+  emulations (ANSI and GENERIC).
+
+2. In lib/Makefile.am:  Add term_vt220.c to the "libcpmio_a_SOURCES = " line.
+3. In cpmio_i.h: Add a prototype for vt220_term() to the "Terminals" section.
+4. In cpmio.c:   Add "VT220" to the term_desc[] array, and vt220_term() to the 
+   term_funcs array.
+5. Modify the functions in term_vt220.c.
+
+Legal bits
+==========
+
+    CPMIO: CP/M console emulation library 
+    Copyright (C) 1998 - 1999,2003 John Elliott <jce@seasip.demon.co.uk>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public
+    License along with this library; if not, write to the Free
+    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+

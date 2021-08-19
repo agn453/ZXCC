@@ -1,0 +1,79 @@
+	.z80
+	cseg
+;
+FCB	EQU	005Ch
+FDOS	EQU	5
+CR	EQU	0Dh
+LF	EQU	0Ah
+EOF	EQU	1Ah
+;
+BASE:	DEFB	0EBh,04h	;DOS protection... JMPS LABE
+	EX	DE,HL
+	JP	BEGIN
+	DEFB	0B4h,09h	;DOS protection... MOV AH,9
+	DEFB	0BAh
+	DEFW	BVMES		;DOS protection... MOV DX,OFFSET BVMES
+	DEFB	0CDh,021h	;DOS protection... INT 21h.
+	DEFB	0CDh,020h	;DOS protection... INT 20h.
+
+	DEFB	cr,'UMOUNT v1.00 (c) John Elliott',cr,lf
+	DEFB	'Date: 05/12/1998',cr,lf,eof
+;
+	DSEG
+BVMES:	DEFB	'This program requires CP/M 3+ and a Z80 processor.',cr,lf,'$'
+	CSEG
+
+BEGIN:	SUB	A
+	JP	PE,BADVER	;Weed out 8080 CPUs
+	LD	C,0Ch
+	CALL	FDOS
+	CP	30h		;Weed out non-CP/M 3 versions
+     	JR      NC,MAIN
+BADVER:	LD	DE,BVMES
+	LD	C,9
+	JP	FDOS
+;
+main:	ld	a,(FCB)
+	or	a
+	jp	z,help
+	dec	a
+	ld	(rsxp1),a
+	ld	c,3Ch
+	ld	de,rsxpb
+	call	fdos
+	cp	0ffh
+	ld	de,norsx
+	jr	z,errpr
+	or	a
+	ld	de,nomnt
+	jr	z,errpr
+	ld	de,ok$
+	jr	pr$
+;
+errpr:	ld	c,9
+	call	fdos
+	ld	c,6Ch
+	ld	de,0FF00h
+	call	fdos
+	rst	0
+;
+help:	ld	de,help$
+pr$:	ld	c,9
+	call	fdos
+	rst	0
+;
+	dseg
+ok$:	defb	'Drive removed.',cr,lf,'$'
+norsx:	defb	'REDIR is not loaded.',cr,lf,'$'
+nomnt:	defb	'That is not a redirected drive.',cr,lf,'$'
+help$:	defb	'Syntax:  UMOUNT x:',cr,lf,'$'
+rsxpb:	defb	77h,2
+	defw	redir
+rsxp1:	defw	0
+
+redir:	defb	'REDIRECT'
+	cseg
+
+
+	end
+;

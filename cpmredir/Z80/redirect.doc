@@ -1,0 +1,66 @@
+Redirection tools for CP/M emulators            John Elliott, 16 February 1999
+==============================================================================
+
+  The Redirection tools are a set of programs allowing you to use a DOS 
+or UNIX directory as a CP/M drive. They are designed to be used inside a CP/M 3
+emulator.
+
+* REDIR.COM   is the Z80 end of SAMPLE.C; it is an example of how to use
+             CPMREDIR as an additional filesystem in an existing emulator.
+
+                  REDIR     - to turn redirection on.
+                  REDIR [U] - to turn redirection off.
+
+* MOUNT.COM   will connect a CP/M drive to a DOS directory:
+
+                  MOUNT N:=C:/TEXT/
+
+              makes CP/M able to access the directory C:/TEXT as CP/M drive N:.
+
+              Since CP/M automatically converts the command line to upper case,
+              MOUNT can't really access lower-case directories like this.
+              Therefore, if you type
+
+                  MOUNT \
+
+              you will be able to append the command line as required:
+
+                  A>MOUNT \
+                  MOUNT>L:=/usr/src/linux/
+
+* UMOUNT.COM  disconnects a CP/M drive:
+
+                  UMOUNT N:
+
+              will stop drive N: from being a DOS directory. If you find that 
+              MOUNT.COM reports that a drive is already in use, then use UMOUNT 
+              to disconnect it and the MOUNT to reconnect it.
+
+* LSDIR.COM   can be used as an alternative to DIR; it includes subdirectories 
+              in its listing. 
+
+* CHDIR.COM   is used to select a new directory on the current drive. Examples:
+
+                CHDIR TEXT
+                CHDIR ..
+
+               Note: a command like    CHDIR C:\DATA\PCW  is not acceptable. You 
+                    would have to use two commands:
+                                       
+                                       CHDIR DATA
+                                       CHDIR PCW
+
+* MKDIR.COM   is used to create a new subdirectory in the current directory.
+* RMDIR.COM   is used to delete an empty subdirectory in the current directory.
+
+
+General points
+==============
+
+  Most CP/M programs will work with a redirected drive. Disc editors and 
+unerase programs will not.
+
+  Under DRDOS, password protection will work. Under MSDOS, it won't.
+
+  
+

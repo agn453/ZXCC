@@ -1,0 +1,171 @@
+	.z80
+	cseg
+;
+FCB	EQU	005Ch
+FDOS	EQU	5
+CR	EQU	0Dh
+LF	EQU	0Ah
+EOF	EQU	1Ah
+;
+BASE:	DEFB	0EBh,04h	;DOS protection... JMPS LABE
+	EX	DE,HL
+	JP	BEGIN
+	DEFB	0B4h,09h	;DOS protection... MOV AH,9
+	DEFB	0BAh
+	DEFW	BVMES		;DOS protection... MOV DX,OFFSET BVMES
+	DEFB	0CDh,021h	;DOS protection... INT 21h.
+	DEFB	0CDh,020h	;DOS protection... INT 20h.
+
+	DEFB	cr,'MOUNT v1.01 (c) John Elliott',cr,lf
+	DEFB	'Date: 16/02/1999',cr,lf,eof
+;
+	DSEG
+BVMES:	DEFB	'This program requires CP/M 3+ and a Z80 processor.',cr,lf,'$'
+	CSEG
+
+BEGIN:	SUB	A
+	JP	PE,BADVER	;Weed out 8080 CPUs
+	LD	C,0Ch
+	CALL	FDOS
+	CP	30h		;Weed out non-CP/M 3 versions
+     	JR      NC,MAIN
+BADVER:	LD	DE,BVMES
+	LD	C,9
+	JP	FDOS
+;
+;
+; Syntax: MOUNT C:=D:/FOO/BAR/
+;
+
+main:	ld	de,80h
+	ld	a,(de)
+	ld	l,a
+	ld	h,d
+	inc	de
+	add	hl,de
+	ld	(hl),0
+	dec	hl	;See if there's a \ on the end of the line
+	ld	a,(hl)
+	cp	'\'
+	jr	nz,fdrv	
+	ld	(hl),0
+	ld	a,1
+	ld	(bslash),a
+fdrv:	ld	a,(de)
+	inc	de
+	or	a
+	jp	z,badcmd
+	cp	'='
+	jr	nz,fdrv
+	call	decde
+	call	decde
+	ld	a,(de)
+	cp	':'
+	jp	nz,badcmd
+	call	decde
+	ld	a,(de)
+	cp	'A'
+	jp	c,badcmd
+	cp	'q'		;A:-P:
+	jp	nc,badcmd
+	cp	'Q'		;or a: - p:
+	jr	c,nbcmd
+	cp	'a'
+	jp	c,badcmd
+nbcmd:	sub	'A'
+	and	0Fh
+	ld	(mdrive),a
+	inc	de		;->:
+	inc	de		;->=
+	inc	de
+	ld	(mpath),de
+rtrim:	ld	a,(de)
+	inc	de
+	or	a
+	jr	z,rtrime
+	cp	' '
+	jr	z,rtrime
+	cp	9
+	jr	nz,rtrim
+rtrime:	call	decde		;->terminator
+	xor	a
+	ld	(de),a
+	call	decde		;->last character in path
+	ld	a,(de)
+	cp	'/'
+	jr	z,term1
+	cp	'\'
+	jr	z,term1
+	inc	de
+	ld	a,'/'
+	ld	(de),a
+	inc	de
+	xor	a
+	ld	(de),a
+term1:	ld	de,rsxpb
+	ld	c,3Ch
+	call	5		;Do the "mount" call.
+	cp	0FFh		;No RSX
+	ld	de,norsx
+	jr	z,errpr
+	or	a
+	ld	de,mtfail
+	jr	z,errpr
+	ld	de,ok$
+	ld	c,9
+	call	5
+	ld	a,(bslash)
+	or	a	
+	jr	nz,nextb
+	rst	0
+
+decde:	dec	de
+	ld	a,e
+	cp	81h
+	ret	nc
+badcmd:	ld	a,(bslash)
+	or	a
+	jr	nz,nextb
+	ld	de,badc$
+errpr:	ld	c,9
+	call	5
+	ld	de,0FF00h
+	ld	c,6Ch
+	call	5
+	rst	0
+;
+nextb:	xor	a		;Ask for another command line
+	ld	(bslash),a
+	ld	c,9
+	ld	de,prmpt
+	call	5
+	ld	hl,7Fh
+	ld	(hl),l
+	inc	hl
+	ld	(hl),h
+	dec	hl
+	ex	de,hl
+	ld	c,10
+	call	5		;Get the new command line. Deliberately don't
+	ld	de,crlf		;make it uppercase.
+	ld	c,9
+	call	5
+	jp	main
+
+	dseg
+prmpt:	defb	'MOUNT>$'
+bslash:	defb	0
+badc$:	defb	'Syntax: MOUNT x:=y:/dir1/dir2/ { \ }',13,10,'$'
+rsxpb:	defb	78h,3
+	defw	rname
+mdrive:	defw	0
+mpath:	defw	0
+rname:	defb	'REDIRECT'
+
+norsx:	defb	'REDIR is not loaded.',13,10,'$'
+mtfail:	defb	'That drive is already mounted.',13,10,'$'
+ok$:	defb	'The operation succeeded.'
+crlf:	defb	13,10,'$'
+
+	END
+

@@ -1,0 +1,58 @@
+2012-08-01 John Elliott
+
+	* zxcc-0.5.7 release.
+
+	* Fixed compilation on Mac OS X [Mike Naberezny].
+
+2012-08-01 John Elliott
+
+	* Altered the BIOS traps to be jumps to calls rather than calls. 
+	 Mallard BASIC (and presumably other programs which assume the 
+	 BIOS jumpblock is composed of JMP xxxx instructions) will now 
+	 launch correctly.
+
+2010-11-10 John Elliott
+
+	* zxcc-0.5.6 release.
+
+	* Fixed the implementation of the BIOS traps. Console I/O using
+	 BIOS functions should now work.
+
+2010-07-14 John Elliott
+
+	* Fixed a bug where the last record of files read using the 
+	 CP/M Plus multi-record I/O system was not being padded with
+	 0x1A bytes [Volker Pohlers]
+
+2009-11-03 John Elliott
+
+	* zxcc-0.5.4 release.
+
+	* Fixed a couple of string-formatting funnies.
+
+2003-04-04 John Elliott
+
+	* zxcc-0.5.3 release.
+
+	* Commented out temporary debugging code from z80.c which should not 
+	  have been there (Andy Parkins).
+	
+2003-03-28 John Elliott
+
+	* zxcc-0.5.2 release.
+	
+	* Bug fix: BDOS function 10 now takes pointer to unsigned char, 
+	 so that more than 128 bytes can be input (Andy Parkins).
+
+	* Bug fixes: Add missing "break;"s to the big switch in zxbdos.c,
+	 so that functions 0x1F and 0x2E return the correct values.
+
+	* Implement functions 0x1F and 0x2E when compiling under Windows.
+
+	* Compile fix: Ignore the return value of sync() in cpmredir.
+
+2001-07-27 John Elliott
+
+	* zxcc-0.5.0 release.
+
+	* First automake/autoconf version.
