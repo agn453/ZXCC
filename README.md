@@ -33,11 +33,11 @@ at https://github.com/tsupplis/zxccp
 command options that require filenames.  It now accepts the following
 
 ```
-  -e file.com	CP/M executable file name
-  -f file.sym   Symbol-table for debugger or overlay creation
-  -i directory  Include directory (in native format)
-  -m file.map   Linker map file
-  -cr file.crf  Cross-reference listing
+  -efile.com     CP/M executable file name
+  -ffile.sym     Symbol-table for debugger or overlay creation
+  -idirectory    Include directory (in native format)
+  -mfile.map     Linker map file
+  -crfile.crf    Cross-reference listing
 ```
 
 * The linker (zxlink) should use the renamed HI-TECH linker
