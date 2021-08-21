@@ -51,8 +51,8 @@ should be disabled and return 0xFF in both the A and L registers.
 * Change cpm_bdos_10() to return an unsigned result to avoid buffer
 size being interpreted as negative.
 
-* Emulation of Z80 opcodes for IN (HL),(C) and OUT (C),(HL) are
-incorrect (opcodes 0xED,0x70 and 0xED,0x71 respectively).  This
+* Fix the emulation of Z80 opcodes for IN (HL),(C) and OUT (C),(HL) -
+opcodes 0xED,0x70 and 0xED,0x71 respectively.  This
 is noted in Fred Weigel's AM9511 arithmetic processing unit
 emulation from https://github.com/ratboy666/am9511 in the howto.txt
 description.  NB: I have not included Fred's am9511 support at
