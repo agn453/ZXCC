@@ -58,5 +58,23 @@ emulation from https://github.com/ratboy666/am9511 in the howto.txt
 description.  NB: I have not included Fred's am9511 support at
 this time into ZXCC.
 
+* Russell Marks contributed a fix to the emulation of the Z80 DAA
+(decimal adjust) instruction - based on code from the yaze 1.10
+emulator.  The original code was based on incorrect documentation
+of the DAA instruction in the Zilog and Mostek programming manuals (and
+even in Rodney Zaks "Programming the Z80" book).  The most recent
+documentation from Zilog has the correct description(1).  With this
+fix in-place the emulator is able to run the Z80 instruction emulator
+test suite ZEXDOC from yaze-ag(2).
 
-Tony Nicholson 21-Aug-2021
+--
+
+(1) The most recent Zilog Z80 Family CPU User Manual (UM008001-1000)
+can be found at http://www.zilog.com/docs/z80/z80cpu_um.pdf
+
+(2) You'll find the final version of yaze-ag 2.51.1 (as curated by
+Andreas Gerlich) at http://www.mathematik.uni-ulm.de/users/ag/yaze-ag
+
+--
+
+Tony Nicholson 23-Aug-2021
