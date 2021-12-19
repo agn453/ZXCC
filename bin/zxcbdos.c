@@ -7,36 +7,57 @@
 #endif
 
 /* Line input */
-#ifdef USE_CPMIO
-
-
+/* modified to allow <file even is USE_CPMIO is defined */
 void bdos_rdline(word line, word *PC)
 {
-	unsigned char *buf;
-
 	if (!line) line = cpm_dma;
 	else RAM[line + 1] = 0;
 
-	buf = (unsigned char *)&RAM[line];
+#if USE_CPMIO
+    if (!file_conin) {
+        if (cpm_bdos_10(&RAM[line])) *PC = 0;
+        return;
+    }
+#endif
+    /* if USE_CPMIO is not defined or stdin is redirected from a file */
+    /* cpm rdline accepts up to specified number of characters
+     * the terminating \r or \n is excluded from this count
+     * additionally using fgets adds a \0 at the end of line
+     * which should also be excluded from the count
+     * to support this the fgets reads to a temporary buffer
+     * that has two bytes in case the specified number of bytes
+     * are on the line, before the \n
+     * unix also doesn't convert \r\n to \n so additional
+     * processing is required to skip the \r
+     */
+	int maxlen = RAM[line];
+    char buf[257];     /* allow for 255 byte input + eol + '\0' */
+    int len;
 
-	if (cpm_bdos_10(buf)) *PC = 0;
-}
-
-#else /* def USE_CPMIO */
-
-void bdos_rdline(word line, word *PC)
-{
-	int maxlen;
-
-	if (!line) line = cpm_dma;
-	maxlen = RAM[line];
-
-	fgets((char *)(RAM + line + 2), maxlen, stdin);
-	RAM[line + 1] = strlen((char *)(RAM + line + 2)) - 1;	
-
+	if (fgets(buf, maxlen + 2, stdin)) {    /* allow for \0 terminator */
+        len = strlen(buf);
+        if (len && buf[len - 1] == '\n') {
+            if (--len && buf[len - 1] == '\r')  /* fix \r\n under unix */
+                len--;
+        } else if (len && buf[len - 1] == '\r') {  /* max line under unix */
+            int c;
+            if ((c = getc(stdin)) != '\n')  /* absorb the \n */
+                ungetc(c, stdin);
+            len--;
+        } else if (len > maxlen)    /* line longer than maxlen */
+            ungetc(buf[--len], stdin);   /* so unget extra char */
+    } else
+        len = 0;
+	RAM[line + 1] = len;
+    if (len)
+        memcpy(&RAM[line + 2], buf, len);
+    if (file_conin) {      /* echo to the console if from file */
+        for (int i = 0; i < len; i++)
+            cpm_conout(buf[i]);
+        cpm_conout('\r');
+    } 
 	Msg("Input: [%d] %-*.*s\n", RAM[line + 1], RAM[line + 1], RAM[line +1], (char *)(RAM+line+2));
 }
-#endif /* ndef USE_CPMIO */
 
 #ifndef USE_CPMIO
 

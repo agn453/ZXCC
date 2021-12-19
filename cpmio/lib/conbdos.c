@@ -29,6 +29,7 @@
 #  include <readline/history.h>
 # endif
 #endif
+extern int file_conin;
 
 static void update (int n, int c, unsigned char *s);
 
@@ -275,6 +276,7 @@ unsigned cpm_bdos_10(unsigned char *buffer)
 	buffer[1] = curlen;
 	for (n = 19; n > 0; n--) memcpy(&prev[n][0], &prev[n - 1][0], 257);
 	memcpy(&prev[0][0], buffer + 1, buffer[1] + 1);
+    cpm_conout('\r');
 	return 0;
 }
 #endif /* no readline */
@@ -414,11 +416,15 @@ static int check_ctls(int called_by_func_11)
 {
 	char ch;
 
+
 	if (called_by_func_11)
 	{
 		if (console_mode & 2) return constat();
 	}
 	else if (console_mode & 2) return 0;	/* Not checking ^S */
+
+    if (file_conin)
+        return constat();
 
 	ch = kbchar;
 	if (!(called_by_func_11 && kbchar))
