@@ -40,6 +40,7 @@ static TERMFUNC term_funcs[] = {termios_term, raw_term,  generic_term,
                                 ansi_term,    vt52_term, NULL};
 
 static int filen;
+int file_conin;             /* non zero if stdin comes from a file */
 
 static struct termios ts, ots;
 
@@ -71,6 +72,7 @@ void cpm_scr_init(void)
 
 	fflush(stdin);
 	filen = fileno(stdin);
+    file_conin = !isatty(filen); /* non zero if <file is used */
         cpm_waiting = 0;
         terminal = 0;
 	curses_off();
