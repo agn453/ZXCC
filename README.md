@@ -69,6 +69,12 @@ test suite ZEXDOC from yaze-ag(2).  You can download a copy of the
 CP/M binary for ZEXDOC from
 https://raw.githubusercontent.com/agn453/ZEXALL/main/zexdoc.com
 
+* Mark Ogden (@ogdenpm) has supplied some modifications to allow
+stdin redirection from a file, as well as a fix to the BDOS function 10
+bdos_rdline() routine to process new-line '\n' and '\r\n' correctly
+from file input.
+
+
 --
 
 (1) The most recent Zilog Z80 Family CPU User Manual (UM008001-1000)
@@ -79,4 +85,4 @@ Andreas Gerlich) at http://www.mathematik.uni-ulm.de/users/ag/yaze-ag
 
 --
 
-Tony Nicholson 23-Aug-2021
+Tony Nicholson 20-Dec-2021
