@@ -41,6 +41,7 @@ static TERMFUNC term_funcs[] = {termios_term, raw_term,  generic_term,
 
 static int filen;
 int file_conin;             /* non zero if stdin comes from a file */
+int eof_conin;              /* non zero if eof in stdin */
 
 static struct termios ts, ots;
 
@@ -137,7 +138,6 @@ char termios_const(void)
 char termios_conin(void)
 {
 	char c;
-	int i;
 
 	if (cpm_waiting)
 	{
@@ -147,10 +147,10 @@ char termios_conin(void)
 	}
 
 	fflush(stdout);
-	do
-	{
-		i = read(filen, &c, 1);
-	} while (i < 0);
+    if (read(filen, &c, 1) != 1) { /* treat error and eof as eof */
+        eof_conin = 1;
+        c = 0x1A;   /* map to CPM EOF */
+    }
 	return c;
 }
 
@@ -167,6 +167,7 @@ char cpm_const(void)
                 do_refresh = 0;
 		last_refresh = time(NULL);
         }
+    if (file_conin) return termios_const();
 
 	if (cpm_waiting) return 1;
 
@@ -192,7 +193,7 @@ char cpm_conin(void)
                 do_refresh = 0;
 		last_refresh = time(NULL);
         }
-
+    if (file_conin) return termios_conin();
 	if (cpm_waiting)
 	{
 		char c = cpm_waiting;

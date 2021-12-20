@@ -416,15 +416,8 @@ static int check_ctls(int called_by_func_11)
 {
 	char ch;
 
-
-	if (called_by_func_11)
-	{
-		if (console_mode & 2) return constat();
-	}
-	else if (console_mode & 2) return 0;	/* Not checking ^S */
-
-    if (file_conin)
-        return constat();
+    if (file_conin || (console_mode & 2))
+        return called_by_func_11 ? constat() : 0;   /* 0 if not using ctrl S */
 
 	ch = kbchar;
 	if (!(called_by_func_11 && kbchar))
