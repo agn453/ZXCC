@@ -74,6 +74,12 @@ stdin redirection from a file, as well as a fix to the BDOS function 10
 bdos_rdline() routine to process new-line '\n' and '\r\n' correctly
 from file input.
 
+* Further tweeks from Mark Ogden for Console Line input. A NULL character
+can now be read, and long-lines are truncated (as they would be on a real
+CP/M computer).  Control characters are also echoed using the ^ prefix.
+For example, Ctrl-Z echoes as ^Z (and is read by the emulated program
+as on real CP/M).
+
 
 --
 
@@ -85,4 +91,4 @@ Andreas Gerlich) at http://www.mathematik.uni-ulm.de/users/ag/yaze-ag
 
 --
 
-Tony Nicholson 20-Dec-2021
+Tony Nicholson 21-Dec-2021
