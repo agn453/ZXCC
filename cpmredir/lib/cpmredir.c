@@ -200,7 +200,7 @@ cpm_word fcb_close(cpm_byte *fcb)
 #endif
 		return 0;
 	}
-
+    trackFile(NULL, fcb, handle);   /* stop tracking */
 	if (close(handle)) 
 	{
 		redir_Msg("Ret: -1\n");
@@ -354,6 +354,8 @@ cpm_word fcb_creat(cpm_byte *fcb, cpm_byte *dma)
         char fname[CPM_MAXPATH];
         int handle;
 
+        releaseFCB(fcb);    /* release existing fcb usage */
+
 	/* Don't support ambiguous filenames */
         if (redir_fcb2unix(fcb, fname)) return 0x09FF;
         redir_Msg("fcb_creat(\"%s\")\n", fname);
@@ -374,9 +376,11 @@ cpm_word fcb_creat(cpm_byte *fcb, cpm_byte *dma)
 		return 0;
 	}
 
+    releaseFile(fname); /* purge any open handles for this file */
         handle = open(fname, O_RDWR | O_CREAT | O_EXCL | O_BINARY, 
                              S_IREAD | S_IWRITE);
         if (handle < 0 ) return 0xFF;
+        trackFile(fname, fcb, handle);  /* track the new file */
         fcb[MAGIC_OFFSET    ] = 0xFD;   /* "Magic number"  */
         fcb[MAGIC_OFFSET + 1] = 0;
         redir_wrhandle(fcb + HANDLE_OFFSET, handle);
@@ -401,6 +405,7 @@ cpm_word fcb_rename(cpm_byte *fcb, cpm_byte *dma)
         char ofname[CPM_MAXPATH], nfname[CPM_MAXPATH];
 	cpm_byte sdrv, ddrv;
 
+    releaseFCB(fcb);  /* release any file associated with this fcb */
 	redir_log_fcb(fcb);
 
 	/* Don't support ambiguous filenames */
@@ -422,6 +427,9 @@ cpm_word fcb_rename(cpm_byte *fcb, cpm_byte *dma)
 
         redir_Msg("fcb_rename(\"%s\", \"%s\")\n", ofname, nfname);
 
+        /* make sure neither file has open handles */
+        releaseFile(ofname);
+        releaseFile(nfname);
 	if (rename(ofname, nfname))
 	{
 		if (redir_password_error())
@@ -746,6 +754,7 @@ cpm_word fcb_chmod(cpm_byte *fcb, cpm_byte *dma)
 	{
 		if (stat(fname, &st)) return redir_xlt_err();
 
+        releaseFile(fname);     /* CPM requires file not be open */
 		handle = open(fname, O_RDWR | O_BINARY);
 		if (handle < 0) return redir_xlt_err();
 

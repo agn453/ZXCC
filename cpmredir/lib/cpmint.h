@@ -214,3 +214,12 @@ cpm_word redir_password_error(void);
 /* Append password to filename (FILE.TYP -> FILE.TYP;PASSWORD) */
 void redir_password_append(char *s, cpm_byte *dma);
 
+#if defined(FILETRACKER)
+void releaseFile(char *fname);
+int trackFile(char *fname, void *fcb, int fd);
+#else
+inline void releaseFile(char* fname) {}
+inline int trackFile(char* fname, void* fcb, int fd) { return fd; }
+#endif
+/* helper macro */
+#define releaseFCB(fcb) trackFile(NULL, fcb, -1)

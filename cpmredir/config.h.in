@@ -108,3 +108,6 @@
 
 /* Define to `long int' if <sys/types.h> does not define. */
 #undef off_t
+
+/* define if tracking open files */
+#define FILETRACKER 1
