@@ -80,6 +80,13 @@ CP/M computer).  Control characters are also echoed using the ^ prefix.
 For example, Ctrl-Z echoes as ^Z (and is read by the emulated program
 as on real CP/M).
 
+* More updates from Mark Ogden - this time to keep track of open
+files (CP/M does not care if you don't close a file open for input -
+whereas under ZXCC the operating system keeps a file handle for
+each open file.  This can have an effect when files are deleted or
+renamed.  There's a symbol FILETRACKER that's been added to the
+configuration file ```config.h```.  Undefine this if you wish to
+restore the previous behaviour.
 
 --
 
@@ -91,4 +98,4 @@ Andreas Gerlich) at http://www.mathematik.uni-ulm.de/users/ag/yaze-ag
 
 --
 
-Tony Nicholson 21-Dec-2021
+Tony Nicholson 22-Dec-2021
