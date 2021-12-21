@@ -81,7 +81,7 @@ libcpmredir_a_AR = $(AR) $(ARFLAGS)
 libcpmredir_a_LIBADD =
 am_libcpmredir_a_OBJECTS = cpmdrv.$(OBJEXT) cpmredir.$(OBJEXT) \
 	util.$(OBJEXT) cpmglob.$(OBJEXT) cpmparse.$(OBJEXT) \
-	drdos.$(OBJEXT) xlt.$(OBJEXT)
+	drdos.$(OBJEXT) xlt.$(OBJEXT) track.$(OBJEXT)
 libcpmredir_a_OBJECTS = $(am_libcpmredir_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp
@@ -217,7 +217,7 @@ top_srcdir = @top_srcdir@
 INCLUDES = -I$(top_srcdir)/include
 lib_LIBRARIES = libcpmredir.a
 libcpmredir_a_SOURCES = cpmdrv.c   cpmint.h	  cpmredir.c  util.c \
-		   cpmglob.c  cpmparse.c  drdos.c     xlt.c
+		   cpmglob.c  cpmparse.c  drdos.c     xlt.c track.c
 
 all: all-am
 
@@ -301,6 +301,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/drdos.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/util.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xlt.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/track.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
