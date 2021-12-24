@@ -195,7 +195,7 @@ cpm_word fcb_close(cpm_byte *fcb)
 
 	if (fcb[5] & 0x80)	/* CP/M 3: Flush rather than close */
 	{
-#ifndef WIN32
+#if !defined(WIN32) || defined(__CYGWIN__)
 		sync();
 #endif
 		return 0;
@@ -365,7 +365,7 @@ cpm_word fcb_creat(cpm_byte *fcb, cpm_byte *dma)
 
 	if (fcb[0] & 0x80)
 	{
-#ifdef WIN32
+#if defined(WIN32) && !defined(__CYGWIN__)
 		handle = mkdir(fname);
 #else
 		handle = mkdir(fname, 0x777);
@@ -624,7 +624,7 @@ cpm_word fcb_trunc(cpm_byte *fcb, cpm_byte *dma)
         if (redir_ro_fcb(fcb)) return 0x02FF;
 
         redir_log_fcb(fcb);
-#ifdef WIN32
+#if defined(WIN32) && !defined(__CYGWIN__)
 	(void)offs;
 	return 0x06FF;	/* Simply not implemented */
 #else
@@ -645,7 +645,7 @@ cpm_word fcb_trunc(cpm_byte *fcb, cpm_byte *dma)
 cpm_word fcb_sdate(cpm_byte *fcb, cpm_byte *dma)
 {
         char fname[CPM_MAXPATH];
-#ifdef WIN32
+#if defined(WIN32) && !defined(__CYGWIN__)
         /* TODO: Use SetFileTime() here */
 
        /* Don't support ambiguous filenames */
@@ -717,7 +717,7 @@ cpm_word fcb_chmod(cpm_byte *fcb, cpm_byte *dma)
 		}
 		return redir_xlt_err();
 	}
-#elif defined (WIN32)
+#elif defined(WIN32) && !defined(__CYGWIN__)
 	omode = 0;
 
         if (fcb[9]    & 0x80)  omode |= FILE_ATTRIBUTE_READONLY;
@@ -760,7 +760,7 @@ cpm_word fcb_chmod(cpm_byte *fcb, cpm_byte *dma)
 		}
 		else if (newoffs < st.st_size)
 		{
-#ifndef WIN32		/* XXX Do this somehow in Win32 */
+#if !defined(WIN32) || defined(__CYGWIN__)		/* XXX Do this somehow in Win32 */
 			if (ftruncate(handle, newoffs))
 			{
 				close(handle);
