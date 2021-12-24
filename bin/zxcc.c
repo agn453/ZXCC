@@ -114,10 +114,26 @@ void ed_fe(byte *a, byte *b, byte *c, byte *d, byte *e, byte *f,
 
 void load_bios(void)
 {
+	char dir[CPM_MAXPATH + 1], fname[CPM_MAXPATH + 1];
+	char *q;
 	int bios_len;
-	FILE *fp = fopen(BINDIR80 "bios.bin", "rb");
-
-	if (!fp) fp = fopen("bios.bin", "rb");
+	
+	FILE *fp = fopen("bios.bin", "rb");
+	if (!fp)
+	{
+		strcpy(fname, bindir80);
+		strcat(fname, "bios.bin");
+		fp = fopen(fname, "rb");
+	}
+	if (!fp)
+	{
+		readlink("/proc/self/exe", dir, CPM_MAXPATH);
+		q = strrchr(dir, '/');
+		*++q = 0;
+		strcpy(fname, dir);
+		strcat(fname, "bios.bin");
+		fp = fopen(fname, "rb");
+	}
 	if (!fp)
 	{
 		fprintf(stderr,"%s: Cannot locate bios.bin\n", progname);
