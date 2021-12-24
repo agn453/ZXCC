@@ -22,7 +22,7 @@
 
 #include "cpmint.h"
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(__CYGWIN__)
 static char *drive_to_hostdrive(int cpm_drive)
 {
 	static char prefix[CPM_MAXPATH];
@@ -121,7 +121,7 @@ cpm_word fcb_resro(cpm_word bitmap)
 
 cpm_word fcb_sync(cpm_byte flag)
 {
-#ifdef WIN32
+#if defined(WIN32) && !defined(__CYGWIN__)
 	return 0;
 #else
 	sync(); return 0;	/* Apparently some sync()s are void not int */
@@ -131,7 +131,7 @@ cpm_word fcb_sync(cpm_byte flag)
 
 cpm_word fcb_purge()
 {
-#ifdef WIN32
+#if defined(WIN32) && !defined(__CYGWIN__)
 	return 0;
 #else
 	sync(); return 0;	/* Apparently some sync()s are void not int */
@@ -153,7 +153,7 @@ static cpm_byte exdpb[0x11] = {
 
 cpm_word fcb_getdpb(cpm_byte *dpb)
 {
-#ifdef WIN32
+#if defined(WIN32) && !defined(__CYGWIN__)
 	DWORD spc, bps, fc, tc;
 	unsigned bsh, blm, psh, phm;
 	char *hostd = drive_to_hostdrive(redir_cpmdrive);
@@ -229,7 +229,7 @@ cpm_word fcb_getalv(cpm_byte *alv, cpm_word max)
 
 cpm_word fcb_dfree (cpm_byte drive, cpm_byte *dma)
 {
-#ifdef WIN32
+#if defined(WIN32) && !defined(__CYGWIN__)
 	DWORD spc, bps, fc, tc;
 	DWORD freerec;
 	char *hostd = drive_to_hostdrive(drive);

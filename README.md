@@ -88,6 +88,11 @@ renamed.  There's a symbol FILETRACKER that's been added to the
 configuration file ```config.h```.  Undefine this if you wish to
 restore the previous behaviour.
 
+* Michal Tomek has added environment variables for BINDIR80,
+INCDIR80 and LIBDIR80 to allow overriding the compiled-in defaults.
+Also, the bios.bin file can be in the executable (BINDIR80) directory.
+
+
 --
 
 (1) The most recent Zilog Z80 Family CPU User Manual (UM008001-1000)
