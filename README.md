@@ -92,6 +92,9 @@ restore the previous behaviour.
 INCDIR80 and LIBDIR80 to allow overriding the compiled-in defaults.
 Also, the bios.bin file can be in the executable (BINDIR80) directory.
 
+* More from Michal Tomek - Fix compilation under Cygwin on Windows and
+correct BDOS function 40 (Write with Zero-fill).
+
 
 --
 

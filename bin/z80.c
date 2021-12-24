@@ -72,7 +72,7 @@ void mainloop(word spc, word ssp){
    FILE *fp=0;
    register unsigned short af2=0,bc2=0,de2=0,hl2=0,ix2=0,iy2=0,sp2=0;
    register unsigned char i2=0;
-   unsigned char *memory=memptr[0];
+   /*unsigned char *memory=memptr[0];*/
    struct _next {unsigned char bytes[8];} *next;
    unsigned short BC, DE, HL, AF;
 

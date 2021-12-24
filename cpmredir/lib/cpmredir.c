@@ -508,34 +508,38 @@ cpm_word fcb_randwr(cpm_byte *fcb, cpm_byte *dma)
 /* Write random with 0 fill */
 cpm_word fcb_randwz(cpm_byte *fcb, cpm_byte *dma)
 {
-	dword offs, len;
-	int handle, rl, rv;
+	dword offs, len, unalloc;
+	int handle;
 	cpm_byte zerorec[128];
 
 	SHOWNAME("fcb_randwz")
 
         if ((handle = redir_verify_fcb(fcb)) < 0) return 9;     /* Invalid FCB */
+        /* Software write-protection */
+        if (redir_ro_fcb(fcb)) return 0x02FF;
+
         offs = redir_rd24(fcb + 0x21) * 128;
 	len  = redir_rd32(fcb + 0x1C);
+#ifdef DEBUG
+	printf("offs:%04x len:%04x\n",offs,len);
+#endif
+	unalloc = (len + 127) / 128 * 128; /* first unallocated block */
+#ifdef DEBUG
+	printf("unalloc:%04x req:%04x\n",unalloc,redir_rec_len);
+#endif
+	if (zxlseek(handle, unalloc, SEEK_SET) < 0) return 6; /* bad record no. */
+    
+	memset(zerorec, 0, 128);
 
-	redir_wr32(fcb + LENGTH_OFFSET, offs);
-
-	memset(zerorec, 0, sizeof(zerorec));
-
-	while (len < offs) 
+	while (unalloc < offs + redir_rec_len)
 	{
-		rl = sizeof(zerorec);
-		if ((offs - len) < sizeof(zerorec)) rl = offs - len;
-		rv = write(handle, zerorec, rl);
-		if (rv >= 0) len += rv;
-	
-		if (rv < rl)
+		if (write(handle, zerorec, 128) < 128)
 		{
-			redir_wr32(fcb + LENGTH_OFFSET, len);
 			return redir_xlt_err();
-		}	
+		}
+		unalloc += 128;
+		redir_wr32(fcb + LENGTH_OFFSET, unalloc);
 	}
-        redir_wr32(fcb + LENGTH_OFFSET, offs);
 
 	return fcb_randwr(fcb, dma);
 }
