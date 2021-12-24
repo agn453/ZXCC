@@ -20,6 +20,10 @@
 */
 #endif
 
+char bindir80[1024];
+char libdir80[1024];
+char incdir80[1024];
+
 #define SERIAL "ZXCC05"
 
 /* System include files */

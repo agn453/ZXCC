@@ -170,7 +170,7 @@ void load_comfile(void)
 	char fname[CPM_MAXPATH + 1];
 	FILE *fp;
 
-	strcpy(fname, BINDIR80);
+	strcpy(fname, bindir80);
 	strcat(fname, argv[1]);
         fp = try_com(fname);
         if (!fp) 
@@ -277,9 +277,33 @@ int main(int ac, char **av)
 		zxcc_exit(1);
 	}
 
-	xlt_map(0, BINDIR80);	/* Establish the 3 fixed mappings */
-	xlt_map(1, LIBDIR80);
-	xlt_map(2, INCDIR80);
+	char *tmpenv = getenv("BINDIR80");
+	if (tmpenv)
+		strcpy(bindir80, tmpenv);
+	else
+		strcpy(bindir80, BINDIR80);
+	if (bindir80[strlen(bindir80)-1]!='/')
+		strcat(bindir80, "/");
+
+	tmpenv = getenv("LIBDIR80");
+	if (tmpenv)
+		strcpy(libdir80, tmpenv);
+	else
+		strcpy(libdir80, LIBDIR80);
+	if (libdir80[strlen(libdir80)-1]!='/')
+		strcat(libdir80, "/");
+
+	tmpenv = getenv("INCDIR80");
+	if (tmpenv)
+		strcpy(incdir80, tmpenv);
+	else
+		strcpy(incdir80, INCDIR80);
+	if (incdir80[strlen(incdir80)-1]!='/')
+		strcat(incdir80, "/");
+
+	xlt_map(0, bindir80);	/* Establish the 3 fixed mappings */
+	xlt_map(1, libdir80);
+	xlt_map(2, incdir80);
 	pCmd = (char *)RAM + 0x81;
 
 	for (n = 2; n < argc; n++)
