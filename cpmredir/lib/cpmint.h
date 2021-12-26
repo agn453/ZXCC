@@ -20,18 +20,36 @@
     This file holds internal declarations for the library.
 */
 
+#ifndef _WIN32
 #include "config.h"
+#define DIRSEP  "/"
+#else
+#include "config-win.h"
+#define DIRSEP "/\\:"
+#endif
 #include <stdio.h>
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
+#endif
 #include <stdarg.h>
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
 #include <ctype.h>
 #include <time.h>
+#ifdef _MSC_VER
+#include <sys/utime.h>
+#endif
+#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
+#endif
 #include <sys/stat.h>
 #include <errno.h>
 #ifdef HAVE_DIRENT_H
 # include <dirent.h>
+#ifdef HAVE_DIRECT_H
+#include <direct.h>
+#endif
 #endif
 #ifdef HAVE_NDIR_H
 # include <ndir.h>
@@ -60,31 +78,29 @@
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
+/* MSDOS includes removed */
 
-#ifdef __MSDOS__
-	#include <io.h>
-	#include <dos.h>
-	#include <dir.h>
-	#ifdef __GO32__
-		#include <dpmi.h>
-		#include <go32.h>
-		#include <sys/movedata.h>
-	#endif
-#endif
-
+#ifdef _MSC_VER
+#define mkdir(dir, mode)    _mkdir(dir)
+int truncate(const char* path, off_t length); /* see util.c */
+#define ftruncate _chsize
+/* note Windows build assumes Windows is configured as a non case sensitive filesystem */
+#else
 #define CASE_SENSITIVE_FILESYSTEM 1
-
+#endif
 
 #include "cpmredir.h"
 
 typedef unsigned long dword;	/* Must be at least 32 bits, and
                                    >= sizeof(int) */
+typedef unsigned long DWORD;
+
 #ifdef CPMDEF
-	#define EXT
-	#define INIT(x) =x
+    #define EXT
+    #define INIT(x) =x
 #else
-	#define EXT extern
-	#define INIT(x)
+    #define EXT extern
+    #define INIT(x)
 #endif	
 
 /* The 16 directories to which the 16 CP/M drives are mapped */
@@ -137,14 +153,14 @@ int redir_verify_fcb(cpm_byte *fcb);
 
 
 #ifdef DEBUG
-	long zxlseek(int fd, long offset, int wh);
-	void redir_Msg(char *s, ...);
-	void redir_showfcb(cpm_byte *fcb);
+    long zxlseek(int fd, long offset, int wh);
+    void redir_Msg(char *s, ...);
+    void redir_showfcb(cpm_byte *fcb);
 #else
-	#define zxlseek lseek
-	/* Warning: This is a GCC extension */
-	#define redir_Msg(x, args...)
-	#define redir_showfcb(x)
+    #define zxlseek lseek
+    /* Warning: This is a GCC extension */
+    #define redir_Msg(x, ...)
+    #define redir_showfcb(x)
 #endif
 
 
@@ -221,5 +237,4 @@ int trackFile(char *fname, void *fcb, int fd);
 inline void releaseFile(char* fname) {}
 inline int trackFile(char* fname, void* fcb, int fd) { return fd; }
 #endif
-/* helper macro */
-#define releaseFCB(fcb) trackFile(NULL, fcb, -1)
+#define releaseFCB(fcb)  trackFile(NULL, fcb, -1)

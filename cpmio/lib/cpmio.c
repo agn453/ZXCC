@@ -1,32 +1,33 @@
 /*
 
-    CPMIO: CP/M console emulation library
-    Copyright (C) 1998 - 1999, John Elliott <jce@seasip.demon.co.uk>
+	CPMIO: CP/M console emulation library
+	Copyright (C) 1998 - 1999, John Elliott <jce@seasip.demon.co.uk>
 
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Library General Public
-    License as published by the Free Software Foundation; either
-    version 2 of the License, or (at your option) any later version.
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Library General Public
+	License as published by the Free Software Foundation; either
+	version 2 of the License, or (at your option) any later version.
 
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Library General Public License for more details.
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+	Library General Public License for more details.
 
-    You should have received a copy of the GNU Library General Public
-    License along with this library; if not, write to the Free
-    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU Library General Public
+	License along with this library; if not, write to the Free
+	Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 */
 
 #include "cpmio_i.h"
 #include "termcore.h"
 
+
 static char cpm_waiting;	/* Character waiting for conin */
-static time_t last_refresh;	/* Set to the time the screen was last 
-                                   refreshed */
+static time_t last_refresh;	/* Set to the time the screen was last
+								   refreshed */
 static int do_refresh;		/* Set to 1 if the screen has been written
-                                 * since last refresh() */
+								 * since last refresh() */
 int cpmio_using_curses;		/* Using curses or termios? */
 static int terminal;		/* Terminal type */
 
@@ -34,17 +35,20 @@ typedef int  (*TERMFUNC)(int what, int c);
 typedef void (*VOIDFUNC)(void);
 
 /* Terminals. If you want to add one, add it to these two lines */
-static char     *term_desc[] = {"TERMIOS", "RAW",    "GENERIC",    
-                                "ANSI",    "VT52",    NULL};
-static TERMFUNC term_funcs[] = {termios_term, raw_term,  generic_term, 
-                                ansi_term,    vt52_term, NULL};
+static char* term_desc[] = { "TERMIOS", "RAW",    "GENERIC",
+								"ANSI",    "VT52",    NULL };
+static TERMFUNC term_funcs[] = { termios_term, raw_term,  generic_term,
+								ansi_term,    vt52_term, NULL };
 
 static int filen;
 int file_conin;             /* non zero if stdin comes from a file */
 int eof_conin;              /* non zero if eof in stdin */
 
+#ifdef _MSC_VER
+static DWORD ts, ots;
+#else
 static struct termios ts, ots;
-
+#endif
 static void curses_off(void);
 static char key_xlt(int key);
 
@@ -61,7 +65,7 @@ static void curses_on(void)
 	keypad(stdscr, TRUE);
 
 	last_refresh = time(NULL);
-	do_refresh   = 0;
+	do_refresh = 0;
 
 	cpmio_using_curses = 1;
 }
@@ -69,23 +73,28 @@ static void curses_on(void)
 
 void cpm_scr_init(void)
 {
-	char *s;
+	char* s;
 
 	fflush(stdin);
 	filen = fileno(stdin);
-    file_conin = !isatty(filen); /* non zero if <file is used */
-        cpm_waiting = 0;
-        terminal = 0;
+	file_conin = !isatty(filen); /* non zero if <file is used */
+	cpm_waiting = 0;
+	terminal = 0;
 	curses_off();
-        tcgetattr(filen, &ts);
- 	tcgetattr(filen, &ots); 
+
+#ifdef _MSC_VER
+	GetConsoleMode((HANDLE)_get_osfhandle(filen), &ots);
+	SetConsoleMode((HANDLE)_get_osfhandle(filen), 0);
+#else
+	tcgetattr(filen, &ts);
+	tcgetattr(filen, &ots);
 	cfmakeraw(&ts);
 	tcsetattr(filen, TCSANOW, &ts);
-
+#endif
 	s = getenv("CPMTERM");
-	if (s) 
+	if (s)
 	{
-		if (cpm_set_terminal(s)) 
+		if (cpm_set_terminal(s))
 		{
 			fprintf(stderr, "No ZXCC driver for CPMTERM=%s; assuming CPMTERM=%s\r\n",
 				s, term_desc[0]);
@@ -110,28 +119,36 @@ static void curses_off(void)
 void cpm_scr_unit(void)
 {
 	curses_off();
+#ifdef _MSC_VER
+	SetConsoleMode((HANDLE)_get_osfhandle(filen), ots);
+#else
 	tcsetattr(filen, TCSANOW, &ots);
+#endif
 }
 
 
 char termios_const(void)
 {
+	if (cpm_waiting)
+		return 1;
+
+#ifdef _WIN32
+	return file_conin ? !feof(stdin) : _kbhit() != 0;
+#else
 	int i;
 	fd_set rfds;
 	struct timeval tv;
 
-	if (cpm_waiting) return 1;
-
 	fflush(stdout);
 	FD_ZERO(&rfds);
-	FD_SET(filen, &rfds);	
+	FD_SET(filen, &rfds);
 
 	tv.tv_sec = tv.tv_usec = 0;
 
-	i = select(1, &rfds, NULL, NULL, &tv);	
-
+	i = select(1, &rfds, NULL, NULL, &tv);
 	if (i) return 1;	/* Data ready */
 	else return 0;		/* Data not ready */
+#endif
 }
 
 
@@ -147,10 +164,14 @@ char termios_conin(void)
 	}
 
 	fflush(stdout);
-    if (read(filen, &c, 1) != 1) { /* treat error and eof as eof */
-        eof_conin = 1;
-        c = 0x1A;   /* map to CPM EOF */
-    }
+#ifdef _WIN32
+	if (!file_conin)
+		return _getch();
+#endif
+	if (read(filen, &c, 1) != 1) { /* treat error and eof as eof */
+		eof_conin = 1;
+		c = 0x1A;   /* map to CPM EOF */
+	}
 	return c;
 }
 
@@ -161,13 +182,14 @@ char cpm_const(void)
 
 	if (!cpmio_using_curses) return termios_const();
 
-        if (do_refresh && last_refresh != time(NULL))
-        {
-                if (terminal) refresh();
-                do_refresh = 0;
+	if (do_refresh && last_refresh != time(NULL))
+	{
+		if (terminal) refresh();
+		do_refresh = 0;
 		last_refresh = time(NULL);
-        }
-    if (file_conin) return termios_const();
+	}
+	/* allow for terminal refresh */
+	if (file_conin) return termios_const();
 
 	if (cpm_waiting) return 1;
 
@@ -187,20 +209,22 @@ char cpm_conin(void)
 
 	if (!cpmio_using_curses) return termios_conin();
 
-        if (do_refresh && last_refresh != time(NULL))
-        {
-                if (terminal) refresh();
-                do_refresh = 0;
+	if (do_refresh && last_refresh != time(NULL))
+	{
+		if (terminal) refresh();
+		do_refresh = 0;
 		last_refresh = time(NULL);
-        }
-    if (file_conin) return termios_conin();
+	}
+	/* allow for terminal refresh */
+	if (file_conin) return termios_conin();
+
 	if (cpm_waiting)
 	{
 		char c = cpm_waiting;
-		cpm_waiting = 0;	
+		cpm_waiting = 0;
 		return c;
 	}
-	
+
 	ch = getch();
 	return key_xlt(ch);
 }
@@ -208,9 +232,9 @@ char cpm_conin(void)
 
 int cpm_term_direct(int func, int param)
 {
-        TERMFUNC tf = term_funcs[terminal];
+	TERMFUNC tf = term_funcs[terminal];
 
-        return ((*tf)(func, param));
+	return ((*tf)(func, param));
 }
 
 
@@ -219,7 +243,7 @@ int cpm_term_direct(int func, int param)
 void cpm_conout(char c)
 {
 	TERMFUNC tf = term_funcs[terminal];
-	
+
 	if ((*tf)(CPM_TERM_CHAR, c) == 0) return;
 
 	do_refresh = 1;
@@ -232,17 +256,17 @@ void cpm_conout(char c)
 }
 
 
-int cpm_set_terminal(char *s)
+int cpm_set_terminal(char* s)
 {
 	int t;
 	TERMFUNC tf;
 
 	for (t = 0; term_desc[t]; ++t)
 	{
-		if (!strcmp(s, term_desc[t])) 
+		if (!strcmp(s, term_desc[t]))
 		{
 			tf = term_funcs[t];
-			if (terminal != t) 
+			if (terminal != t)
 			{
 				if (t) curses_on(); else curses_off();
 				(*tf)(CPM_TERM_INIT, 0);
@@ -256,17 +280,17 @@ int cpm_set_terminal(char *s)
 
 
 
-char *cpm_get_terminal(void)
+char* cpm_get_terminal(void)
 {
 	return term_desc[terminal];
 }
 
 
-void cpm_enum_terminals(char *c)
+void cpm_enum_terminals(char* c)
 {
-	int l;
+	size_t l;
 	int t = 0;
-	char *desc = term_desc[t];
+	char* desc = term_desc[t];
 
 	while (desc != NULL)
 	{
@@ -276,7 +300,7 @@ void cpm_enum_terminals(char *c)
 		desc = term_desc[++t];
 	}
 	*(c++) = '\0';
-	*c     = '\0';	
+	*c = '\0';
 }
 
 
@@ -285,7 +309,7 @@ void cpm_enum_terminals(char *c)
 
 int termios_term(int func, int param)
 {
-	if (func == CPM_TERM_CHAR) 
+	if (func == CPM_TERM_CHAR)
 	{
 		putchar(param);
 		return 1;
@@ -299,11 +323,11 @@ int termios_term(int func, int param)
 
 int raw_term(int func, int param)
 {
-	switch(func)
+	switch (func)
 	{
-		case CPM_TERM_INIT:  core_init();  return 1; 
-		case CPM_TERM_CHAR:  addch(param); return 1;
-	}  
+	case CPM_TERM_INIT:  core_init();  return 1;
+	case CPM_TERM_CHAR:  addch(param); return 1;
+	}
 	return core_term(func, param);
 }
 
@@ -325,48 +349,48 @@ char key_xlt(int ch)
 {
 	char a = ch;
 #ifdef __PDCURSES__
-	switch(ch)
+	switch (ch)
 	{
-		case KEY_DOWN:  a = 0x0018; break; /* Down -> ^X */
-		case KEY_UP:    a = 0x0005; break; /* Up   -> ^E */
-		case KEY_LEFT:  a = 0x0013; break; /* Left -> ^S */
-		case KEY_RIGHT: a = 0x0004; break; /* Right-> ^D */
-		case KEY_HOME:  a = 0x0011; ungetch(0x053); break; /* Home -> ^QS */
-		case KEY_DC:    a = 0x0007; break; /* Del -> ^G */
-		case KEY_IC:    a = 0x0016; break; /* Ins -> ^V */
-		case KEY_NPAGE: a = 0x0003; break; /* PgDn -> ^C */
-		case KEY_PPAGE: a = 0x0012; break; /* PgUp -> ^R */
-		case KEY_END:   a = 0x0011; ungetch(0x0044); break; /* End -> ^QD */
-		case CTL_LEFT:  a = 0x0001; break; /* ctl-left  -> ^A */
-		case CTL_RIGHT: a = 0x0006; break; /* ctl-right -> ^F */
-		case CTL_PGUP:  a = 0x0011; ungetch(0x0012); break; /* ctl-pgup */
-		case CTL_PGDN:  a = 0x0011; ungetch(0x0003); break; /* ctl-pgdn */
-		case CTL_HOME:  a = 0x0011; ungetch(0x0005); break; /* ctl-home */
-		case CTL_END:   a = 0x0011; ungetch(0x0018); break; /* ctl-end */
+	case KEY_DOWN:  a = 0x0018; break; /* Down -> ^X */
+	case KEY_UP:    a = 0x0005; break; /* Up   -> ^E */
+	case KEY_LEFT:  a = 0x0013; break; /* Left -> ^S */
+	case KEY_RIGHT: a = 0x0004; break; /* Right-> ^D */
+	case KEY_HOME:  a = 0x0011; ungetch(0x053); break; /* Home -> ^QS */
+	case KEY_DC:    a = 0x0007; break; /* Del -> ^G */
+	case KEY_IC:    a = 0x0016; break; /* Ins -> ^V */
+	case KEY_NPAGE: a = 0x0003; break; /* PgDn -> ^C */
+	case KEY_PPAGE: a = 0x0012; break; /* PgUp -> ^R */
+	case KEY_END:   a = 0x0011; ungetch(0x0044); break; /* End -> ^QD */
+	case CTL_LEFT:  a = 0x0001; break; /* ctl-left  -> ^A */
+	case CTL_RIGHT: a = 0x0006; break; /* ctl-right -> ^F */
+	case CTL_PGUP:  a = 0x0011; ungetch(0x0012); break; /* ctl-pgup */
+	case CTL_PGDN:  a = 0x0011; ungetch(0x0003); break; /* ctl-pgdn */
+	case CTL_HOME:  a = 0x0011; ungetch(0x0005); break; /* ctl-home */
+	case CTL_END:   a = 0x0011; ungetch(0x0018); break; /* ctl-end */
 
-		case KEY_B2:    a = 0x0001; break; /* center -> ^A */
-		case PADSLASH:  a = 0x002f; break; /* grey / */
-		case PADENTER:  a = 0x000d; break; /* grey enter */
-		case PADSTAR:   a = 0x002a; break; /* grey * */
-		case PADMINUS:  a = 0x002d; break; /* grey - */
-		case PADPLUS:   a = 0x002b; break; /* grey + */
-		default: break;
+	case KEY_B2:    a = 0x0001; break; /* center -> ^A */
+	case PADSLASH:  a = 0x002f; break; /* grey / */
+	case PADENTER:  a = 0x000d; break; /* grey enter */
+	case PADSTAR:   a = 0x002a; break; /* grey * */
+	case PADMINUS:  a = 0x002d; break; /* grey - */
+	case PADPLUS:   a = 0x002b; break; /* grey + */
+	default: break;
 	}
 #else /* def __PDCURSES__ */
-	switch(ch)
+	switch (ch)
 	{
-		case KEY_DOWN:  a = 0x0018; break; /* Down -> ^X */
-		case KEY_UP:    a = 0x0005; break; /* Up   -> ^E */
-		case KEY_LEFT:  a = 0x0013; break; /* Left -> ^S */
-		case KEY_RIGHT: a = 0x0004; break; /* Right-> ^D */
-		case KEY_HOME:  a = 0x0011; ungetch(0x053); break; /* Home -> ^QS */
-		case KEY_DC:    a = 0x0007; break; /* Del -> ^G */
-		case KEY_IC:    a = 0x0016; break; /* Ins -> ^V */
-		case KEY_NPAGE: a = 0x0003; break; /* PgDn -> ^C */
-		case KEY_PPAGE: a = 0x0012; break; /* PgUp -> ^R */
-		case KEY_END:   a = 0x0011; ungetch(0x0044); break; /* End -> ^QD */
-		case KEY_B2:    a = 0x0001; break; /* center -> ^A */
-		default: break;
+	case KEY_DOWN:  a = 0x0018; break; /* Down -> ^X */
+	case KEY_UP:    a = 0x0005; break; /* Up   -> ^E */
+	case KEY_LEFT:  a = 0x0013; break; /* Left -> ^S */
+	case KEY_RIGHT: a = 0x0004; break; /* Right-> ^D */
+	case KEY_HOME:  a = 0x0011; ungetch(0x053); break; /* Home -> ^QS */
+	case KEY_DC:    a = 0x0007; break; /* Del -> ^G */
+	case KEY_IC:    a = 0x0016; break; /* Ins -> ^V */
+	case KEY_NPAGE: a = 0x0003; break; /* PgDn -> ^C */
+	case KEY_PPAGE: a = 0x0012; break; /* PgUp -> ^R */
+	case KEY_END:   a = 0x0011; ungetch(0x0044); break; /* End -> ^QD */
+	case KEY_B2:    a = 0x0001; break; /* center -> ^A */
+	default: break;
 	}
 #endif /* def __PDCURSES__ */
 

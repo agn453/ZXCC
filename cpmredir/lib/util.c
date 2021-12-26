@@ -126,10 +126,11 @@ int redir_fcb2unix(cpm_byte* fcb, char* fname)
 
 int redir_ofile(cpm_byte* fcb, char* s)
 {
-	int h, rv;
+	int h;
 
 	   /* Software write-protection */
 #ifdef __MSDOS__
+	int rv;
 	if (!redir_ro_fcb(fcb))
 	{
 		rv = _dos_open(s, O_RDWR, &h);
@@ -137,10 +138,10 @@ int redir_ofile(cpm_byte* fcb, char* s)
 		redir_Msg("Open of %s fails: error %x\r\n", s, rv);
 	}
 	rv = _dos_open(s, O_RDONLY, &h);
-	if (rv != 0)
-	    fcb[9] |= 0x80;
+	if (rv) return -1;
+	fcb[9] |= 0x80;
 #else
-	(void)rv;	/* Stop compiler warning */
+	releaseFCB(fcb);
 	if (!redir_ro_fcb(fcb))
 	{
 		h = open(s, O_RDWR | O_BINARY);
@@ -148,10 +149,10 @@ int redir_ofile(cpm_byte* fcb, char* s)
 			return trackFile(s, fcb,  h);
 	}
 	h = open(s, O_RDONLY | O_BINARY);
-	if (h >= 0)
-        fcb[9] |= 0x80;
+	if (h < 0) return -1;
+	fcb[9] |= 0x80;
 #endif
-	return trackFile(s, fcb, h >= 0 ? h : -1);
+	return trackFile(s, fcb, h);
 }
 
 
@@ -305,3 +306,18 @@ cpm_word redir_xlt_err(void)
 	default:     return 0xFF;	/* Software error */
 	}
 }
+
+#ifdef _MSC_VER
+/* minimal implementation of truncate */
+int truncate(const char* path, off_t length) {
+	int fd = open(path, O_BINARY | O_RDWR);
+
+	if (fd < 0)
+		return -1;
+	int result = ftruncate(fd, length);
+	return close(fd) == 0 && result == 0 ? 0 : -1;
+
+}
+
+
+#endif

@@ -5,7 +5,6 @@
 #ifdef __MSDOS__
 #include <conio.h>
 #endif
-extern int eof_conin;
 
 /* Line input */
 /* modified to allow <file even is USE_CPMIO is defined */

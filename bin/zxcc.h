@@ -1,28 +1,41 @@
 /*
  *  Change the directories in these #defines if necessary. Note trailing slash.
  */
-
+#ifndef _WIN32
 #include "config.h"
-
-#ifdef __MSDOS__
-
-	#define BINDIR80 "d:/tools/cpm/bin80/"
-	#define LIBDIR80 "d:/tools/cpm/lib80/"
-	#define INCDIR80 "d:/tools/cpm/include/"
+#ifndef CPMDIR80
+#define CPMDIR80 "/usr/local/lib/cpm/"
+#endif
+#define ISDIRSEP(c) ((c) == '/')
+#define DIRSEPCH	'/'
 #else
-/* Unless overridden, these are defined by autoconf. Note trailing slash.
- 	#undef BINDIR80
- 	#undef LIBDIR80
- 	#undef INCDIR80
-	#define BINDIR80 "/usr/local/lib/cpm/bin80/"
-	#define LIBDIR80 "/usr/local/lib/cpm/lib80/"
-	#define INCDIR80 "/usr/local/lib/cpm/include80/"
-*/
+#include "config-win.h"
+#ifndef CPMDIR80
+#define CPMDIR80 "d:/local/lib/cpm/"
+#endif
+#define ISDIRSEP(c) ((c) == '/' || (c) == '\\')
+#define DIRSEPCH	'\\'
 #endif
 
-char bindir80[1024];
-char libdir80[1024];
-char incdir80[1024];
+/* the default sub directories trailing / is required */
+#define BIN80   "bin80/"
+#define LIB80   "lib80/"
+#define INC80   "include80/"
+
+#ifndef BINDIR80
+#define BINDIR80 CPMDIR80 BIN80
+#endif
+#ifndef LIBDIR80
+#define LIBDIR80 CPMDIR80 LIB80
+#endif
+#ifndef INCDIR80
+#define INCDIR80 CPMDIR80 INC80
+#endif
+
+
+extern char bindir80[];
+extern char libdir80[];
+extern char incdir80[];
 
 #define SERIAL "ZXCC05"
 
@@ -36,7 +49,7 @@ char incdir80[1024];
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#ifdef HAVE_UNISTD_H
+#if HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 #include <errno.h>
@@ -80,7 +93,8 @@ extern char *progname;
 extern char **argv;
 extern int argc;
 extern byte RAM[65536]; /* The Z80's address space */
-extern int file_conin;  /* added to allow <file */
+extern int file_conin;  /* non zero if stdin not a terminal */
+extern int eof_conin;   /* non zero if eof of stdin */
 /* Z80 CPU emulation */
 
 #include "z80.h"
