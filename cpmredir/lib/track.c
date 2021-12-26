@@ -114,7 +114,7 @@ int trackFile(char* fname, void* fcb, int fd) {
 	track_t* s = (track_t*)&openFiles;
 	while (s->next) {	/* find any existing fcb or fd */
 		if (s->next->fcb == fcb || s->next->handle == fd) {
-            if (s->next->handle != fd || !fname)   /* protect against closing new file */
+            if (s->next->handle != fd)
                 close(s->next->handle);
 			s->next = rmHandle(s->next);	/* release the tracker */
 		}

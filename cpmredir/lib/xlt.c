@@ -100,23 +100,27 @@ void xlt_name(char *localname, char *cpmname)
 {
     char ibuf[CPM_MAXPATH + 1];
     char nbuf[CPM_MAXPATH + 1];
-    char *pname;
+    char *pname = ibuf;
+    char *s;
     int n;
 
     sprintf(ibuf, "%-.*s", CPM_MAXPATH, localname);
-    pname = strrchr(ibuf, '/'); 
-#ifdef _WIN32
-    if (!pname) pname = strrchr(ibuf,'\\');
-    if (!pname) pname = strrchr(ibuf,':');
-#endif
-    if (!pname)	/* No path separators in the name. It is therefore a
+    while (s = strpbrk(pname, DIRSEP))   /* find the last directory separator allows mixed \ and / in windows */
+        pname = s + 1;
+
+    if (pname == ibuf) {	/* No path separators in the name. It is therefore a
                            local filename, so map it to drive P: */
-    {
         strcpy(cpmname, "p:");
         strcat(cpmname, ibuf);
         return;
     }
-    ++pname;
+    /* catch user specified current directory p: or P: */
+    if (pname == ibuf + 2 && ibuf[1] == ':' && (ibuf[0] == 'P' || ibuf[0] == 'p')) {
+        cpmname[0] = 'p';               /* make sure it's lower case */
+        strcpy(cpmname + 1, ibuf + 1);
+        return;
+    }
+
     strcpy(nbuf, pname);	/* nbuf holds filename component */
     *pname = 0;		/* ibuf holds path component */
 
