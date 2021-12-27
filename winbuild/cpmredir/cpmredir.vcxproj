@@ -107,7 +107,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>if exist $(SolutionDir)install.cfg call $(SolutionDir)Scripts\install.cmd $(TargetPath) $(SolutionDir)</Command>
+      <Command>if exist "$(SolutionDir)install.cfg" call "$(SolutionDir)Scripts\install.cmd" "$(TargetPath)" "$(SolutionDir)"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Install</Message>
@@ -134,7 +134,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>if exist $(SolutionDir)install.cfg call $(SolutionDir)Scripts\install.cmd $(TargetPath) $(SolutionDir)</Command>
+      <Command>if exist "$(SolutionDir)install.cfg" call "$(SolutionDir)Scripts\install.cmd" "$(TargetPath)" "$(SolutionDir)"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Install</Message>
@@ -157,7 +157,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>if exist $(SolutionDir)install.cfg call $(SolutionDir)Scripts\install.cmd $(TargetPath) $(SolutionDir)</Command>
+      <Command>if exist "$(SolutionDir)install.cfg" call "$(SolutionDir)Scripts\install.cmd" "$(TargetPath)" "$(SolutionDir)"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Install</Message>
@@ -184,7 +184,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>if exist $(SolutionDir)install.cfg call $(SolutionDir)Scripts\install.cmd $(TargetPath) $(SolutionDir)</Command>
+      <Command>if exist "$(SolutionDir)install.cfg" call "$(SolutionDir)Scripts\install.cmd" "$(TargetPath)" "$(SolutionDir)"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Install</Message>
