@@ -101,13 +101,14 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalIncludeDirectories>..\include;..\..\bin;..\..\cpmredir\include</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>if exist $(SolutionDir)install.cfg call $(SolutionDir)Scripts\install.cmd $(TargetPath) $(SolutionDir)</Command>
+      <Command>if exist "$(SolutionDir)install.cfg" call "$(SolutionDir)Scripts\install.cmd" "$(TargetPath)" "$(SolutionDir)"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Install</Message>
@@ -123,6 +124,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalIncludeDirectories>..\include;..\..\bin;..\..\cpmredir\include</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -131,7 +133,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>if exist $(SolutionDir)install.cfg call $(SolutionDir)Scripts\install.cmd $(TargetPath) $(SolutionDir)</Command>
+      <Command>if exist "$(SolutionDir)install.cfg" call "$(SolutionDir)Scripts\install.cmd" "$(TargetPath)" "$(SolutionDir)"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Install</Message>
@@ -145,13 +147,14 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalIncludeDirectories>..\include;..\..\bin;..\..\cpmredir\include</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>if exist $(SolutionDir)install.cfg call $(SolutionDir)Scripts\install.cmd $(TargetPath) $(SolutionDir)</Command>
+      <Command>if exist "$(SolutionDir)install.cfg" call "$(SolutionDir)Scripts\install.cmd" "$(TargetPath)" "$(SolutionDir)"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Install</Message>
@@ -167,6 +170,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalIncludeDirectories>..\include;..\..\bin;..\..\cpmredir\include</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -175,7 +179,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>if exist $(SolutionDir)install.cfg call $(SolutionDir)Scripts\install.cmd $(TargetPath) $(SolutionDir)</Command>
+      <Command>if exist "$(SolutionDir)install.cfg" call "$(SolutionDir)Scripts\install.cmd" "$(TargetPath)" "$(SolutionDir)"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Install</Message>

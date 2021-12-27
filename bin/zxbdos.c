@@ -12,11 +12,14 @@
 #define BCD(x) (((x % 10)+16*(x/10)) & 0xFF)
 
 /* Convert time_t to CP/M day count/hours/minutes */
+/* there is a duplicate of this code in util.c.
+* same modification applied here
+*/
 dword cpmtime(time_t t)
 {
-        long d  = (t / 86400) - 2921;  /* CP/M day 0 is unix day 2921 */
-        long h  = (t % 86400) / 3600;  /* Hour, 0-23 */
-        long m  = (t % 3600)  / 60;    /* Minute, 0-59 */
+        dword d  = (dword)((t / 86400) - 2921);  /* CP/M day 0 is unix day 2921 */
+        dword h  = (t % 86400) / 3600;  /* Hour, 0-23 */
+        dword m  = (t % 3600)  / 60;    /* Minute, 0-59 */
 
         return (d | (BCD(h) << 16) | (BCD(m) << 24));
 }

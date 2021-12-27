@@ -195,9 +195,16 @@ void redir_Msg(char* s, ...)
 /* Convert time_t to CP/M day count/hours/minutes */
 dword redir_cpmtime(time_t t)
 {
-	long d = (t / 86400) - 2921;  /* CP/M day 0 is unix day 2921 */
-	long h = (t % 86400) / 3600;  /* Hour, 0-23 */
-	long m = (t % 3600) / 60;    /* Minute, 0-59 */
+/* Microsoft compiler warned around the conversion from time_t to long
+ * as to support dates beyond 2038 time_t is set as a long long
+ * and for the Microsoft compiler sizeof(long) == 4 and sizeof(long long) == 8
+ * for other compilers both have size 8
+ * As the result is a dword (unsigned long), the code below is modified to reflect this
+ */
+
+	dword d = (dword)((t / 86400) - 2921);  /* CP/M day 0 is unix day 2921 */
+	dword h = (t % 86400) / 3600;  /* Hour, 0-23 */
+	dword m = (t % 3600) / 60;    /* Minute, 0-59 */
 
 	return (d | (BCD(h) << 16) | (BCD(m) << 24));
 }

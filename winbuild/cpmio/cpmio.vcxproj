@@ -113,6 +113,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>..\include;..\external\include;..\..\cpmio\include</AdditionalIncludeDirectories>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -120,7 +121,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>if exist $(SolutionDir)install.cfg call $(SolutionDir)Scripts\install.cmd $(TargetPath) $(SolutionDir)</Command>
+      <Command>if exist "$(SolutionDir)install.cfg" call "$(SolutionDir)Scripts\install.cmd" "$(TargetPath)" "$(SolutionDir)"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Install</Message>
@@ -142,6 +143,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>..\include;..\external\include;..\..\cpmio\include</AdditionalIncludeDirectories>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -151,7 +153,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>if exist $(SolutionDir)install.cfg call $(SolutionDir)Scripts\install.cmd $(TargetPath) $(SolutionDir)</Command>
+      <Command>if exist "$(SolutionDir)install.cfg" call "$(SolutionDir)Scripts\install.cmd" "$(TargetPath)" "$(SolutionDir)"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Install</Message>
@@ -171,6 +173,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>..\include;..\external\include;..\..\cpmio\include</AdditionalIncludeDirectories>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -178,7 +181,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>if exist $(SolutionDir)install.cfg call $(SolutionDir)Scripts\install.cmd $(TargetPath) $(SolutionDir)</Command>
+      <Command>if exist "$(SolutionDir)install.cfg" call "$(SolutionDir)Scripts\install.cmd" "$(TargetPath)" "$(SolutionDir)"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Install</Message>
@@ -200,6 +203,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>..\include;..\external\include;..\..\cpmio\include</AdditionalIncludeDirectories>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -209,7 +213,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>if exist $(SolutionDir)install.cfg call $(SolutionDir)Scripts\install.cmd $(TargetPath) $(SolutionDir)</Command>
+      <Command>if exist "$(SolutionDir)install.cfg" call "$(SolutionDir)Scripts\install.cmd" "$(TargetPath)" "$(SolutionDir)"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Install</Message>
