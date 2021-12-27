@@ -104,7 +104,7 @@ file.  Further details concerning the changes are in
 [changes.md](https://raw.githubusercontent.com/agn453/ZXCC/main/changes.md).
 
 * A fix was made so that any reference to the P: drive is now redirected
-to The local default directory.  Also filenames under Windows can use either
+to the local default directory.  Also, filenames under Windows can use either
 a forward slash ```/``` or back-slash ```\``` in the directory path.
 
 
@@ -118,4 +118,4 @@ Andreas Gerlich) at http://www.mathematik.uni-ulm.de/users/ag/yaze-ag
 
 --
 
-Tony Nicholson 22-Dec-2021
+Tony Nicholson 27-Dec-2021
