@@ -1,9 +1,9 @@
 @echo off
 setlocal enabledelayedexpansion
 rem locally install applications
-if /I [%~1] == [-v] (echo %0: Rev 11  -- 5eb32b3 [2020-09-20]) & goto :EOF
-if [%1] == [] goto usage
-if [%2] neq [] goto start
+if /I "%~1" == "-v" (echo %0: Rev 11  -- 5eb32b3 [2020-09-20]) & goto :EOF
+if "%~1" == "" goto usage
+if "%~2" neq "" goto start
 :usage
 echo usage: %0 file installRoot [configFile]
 echo        configFile defaults to installRoot\install.cfg
@@ -33,16 +33,15 @@ echo -* stops all processing until the next control line (of limited use)
 exit /b 1
 
 :start
-
 :: basic filename
-set FILE=%~nx1
+set FILE="%~nx1"
 :: find the path to the target file
 set PATHTO=%~p1
 :getType
 :: get the directory as a filename by removing trailing \
 for %%I in ("%PATHTO:~,-1%") do (
     set PARENT=%%~nxI
-    set PATHTO=%%~pI
+    set PATHTO="%%~pI"
 )
 if /I [%PARENT:~-5,5%] == [Debug] goto gotparent
 if /I [%PARENT:~-7,7%] == [Release] goto gotparent
@@ -53,9 +52,9 @@ goto usage
 :gotparent
 
 if [%3] == [] (
-    set CONFIGFILE=%2\install.cfg
+    set CONFIGFILE="%~2\install.cfg"
 ) else (
-    set CONFIGFILE=%3
+    set CONFIGFILE="%~3"
 )
 set CONFIGFILE=%CONFIGFILE:\\=\%
 
@@ -68,14 +67,14 @@ if not exist %CONFIGFILE% (
 for /f "tokens=2 delims==." %%A in ('wmic os get LocalDateTime /format:list') do set NOW=%%A
 :: process the intall config file
 set INCLUDE=Y
-for /f %%A in (%CONFIGFILE%) do (
+for /f "usebackq tokens=*" %%A in (%CONFIGFILE%) do (
 :: cannot set LINE with a comma in the text so convert comma to colon. Need to quote/unquote to do this
-    call :setSkipping ACTION %%A
+    call :setSkipping ACTION "%%A"
     if [!ACTION!] == [COPY] (
         if [!INCLUDE!] == [Y] (
             for /f "tokens=1,2,* delims=," %%B in ("%%A") do (
                 if /I [%PARENT%] == [%%B] (
-                    call :copy "%1" "%2" "%%C" "%%D"
+                    call :copy "%~1" "%~2" "%%C" "%%D"
                 )
             )
         )
@@ -89,7 +88,8 @@ goto :eof
 setlocal
 set LINE=%~2
 set RESULT=COPY
-if [%LINE%] neq [] (
+if "%~2" neq "" (
+:: doesn't matter here if line has spaces
     if [%LINE:~,1%] == [-] (
        set RESULT=EXCLUDE
     ) else (

@@ -121,7 +121,7 @@ void load_bios(void)
 {
     char dir[CPM_MAXPATH + 1], fname[CPM_MAXPATH + 1];
     char* q;
-    int bios_len;
+    size_t bios_len;
 
     FILE* fp = fopen("bios.bin", "rb");
     if (!fp)
@@ -191,7 +191,7 @@ FILE *try_com(char *s)
 
 void load_comfile(void)
 {
-        int com_len;
+    size_t com_len;
     char fname[CPM_MAXPATH + 1];
     FILE *fp;
 
@@ -354,7 +354,7 @@ int main(int ac, char **av)
 
     }
     pCmd[0x7F] = 0;	/* Truncate to fit the buffer */
-    RAM[0x80] = strlen(pCmd);
+    RAM[0x80] = (byte)strlen(pCmd);
 
     str = parse_to_fcb(pCmd, 0x5C);
     parse_to_fcb(str, 0x6C);	
@@ -450,5 +450,5 @@ static void mkpath(char* fullpath, char* path, char* subdir) {
     s = strchr(fullpath, '\0');
     if (*fullpath && !ISDIRSEP(s[-1]))  /* make sure we have dir sep */
         *s++ = '/';
-    strcat(s, subdir);
+    strcpy(s, subdir);
 }

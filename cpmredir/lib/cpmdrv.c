@@ -186,7 +186,7 @@ cpm_word fcb_getdpb(cpm_byte *dpb)
     exdpb[2] = bsh;
     exdpb[3] = blm;
     exdpb[5] = tc & 0xFF;
-    exdpb[6] = tc >> 8;
+    exdpb[6] = (tc >> 8) & 0xFF;
 
     exdpb[15] = psh;
     exdpb[16] = phm;

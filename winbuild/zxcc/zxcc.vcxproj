@@ -19,7 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\bin\z80.c" />
+    <ClCompile Include="..\..\bin\z80.c">
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4244</DisableSpecificWarnings>
+    </ClCompile>
     <ClCompile Include="..\..\bin\zxbdos.c" />
     <ClCompile Include="..\..\bin\zxcbdos.c" />
     <ClCompile Include="..\..\bin\zxcc.c" />
@@ -117,6 +119,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalIncludeDirectories>..\include;..\..\cpmio\include;..\..\cpmredir\include</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4244</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -126,9 +129,9 @@
     <PostBuildEvent />
     <PostBuildEvent>
       <Message>Install</Message>
-      <Command>if exist $(SolutionDir)install.cfg (
-call $(SolutionDir)Scripts\install.cmd $(TargetPath) $(SolutionDir)
-call $(SolutionDir)Scripts\install.cmd $(SolutionDir)external\$(PlatformTarget)-$(Configuration)\pdcurses.dll $(SolutionDir)
+      <Command>if exist "$(SolutionDir)install.cfg" (
+call "$(SolutionDir)Scripts\install.cmd" "$(TargetPath)" "$(SolutionDir)"
+call "$(SolutionDir)Scripts\install.cmd" "$(SolutionDir)external\$(PlatformTarget)-$(Configuration)\pdcurses.dll" "$(SolutionDir)"
 )</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -143,6 +146,7 @@ call $(SolutionDir)Scripts\install.cmd $(SolutionDir)external\$(PlatformTarget)-
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalIncludeDirectories>..\include;..\..\cpmio\include;..\..\cpmredir\include</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4244</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -154,9 +158,9 @@ call $(SolutionDir)Scripts\install.cmd $(SolutionDir)external\$(PlatformTarget)-
     <PostBuildEvent />
     <PostBuildEvent>
       <Message>Install</Message>
-      <Command>if exist $(SolutionDir)install.cfg (
-call $(SolutionDir)Scripts\install.cmd $(TargetPath) $(SolutionDir)
-call $(SolutionDir)Scripts\install.cmd $(SolutionDir)external\$(PlatformTarget)-$(Configuration)\pdcurses.dll $(SolutionDir)
+      <Command>if exist "$(SolutionDir)install.cfg" (
+call "$(SolutionDir)Scripts\install.cmd" "$(TargetPath)" "$(SolutionDir)"
+call "$(SolutionDir)Scripts\install.cmd" "$(SolutionDir)external\$(PlatformTarget)-$(Configuration)\pdcurses.dll" "$(SolutionDir)"
 )</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -169,6 +173,7 @@ call $(SolutionDir)Scripts\install.cmd $(SolutionDir)external\$(PlatformTarget)-
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalIncludeDirectories>..\include;..\..\cpmio\include;..\..\cpmredir\include</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4244</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -178,9 +183,9 @@ call $(SolutionDir)Scripts\install.cmd $(SolutionDir)external\$(PlatformTarget)-
     <PostBuildEvent />
     <PostBuildEvent>
       <Message>Install</Message>
-      <Command>if exist $(SolutionDir)install.cfg (
-call $(SolutionDir)Scripts\install.cmd $(TargetPath) $(SolutionDir)
-call $(SolutionDir)Scripts\install.cmd $(SolutionDir)external\$(PlatformTarget)-$(Configuration)\pdcurses.dll $(SolutionDir)
+      <Command>if exist "$(SolutionDir)install.cfg" (
+call "$(SolutionDir)Scripts\install.cmd" "$(TargetPath)" "$(SolutionDir)"
+call "$(SolutionDir)Scripts\install.cmd" "$(SolutionDir)external\$(PlatformTarget)-$(Configuration)\pdcurses.dll" "$(SolutionDir)"
 )</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -195,6 +200,7 @@ call $(SolutionDir)Scripts\install.cmd $(SolutionDir)external\$(PlatformTarget)-
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalIncludeDirectories>..\include;..\..\cpmio\include;..\..\cpmredir\include</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4244</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -206,9 +212,9 @@ call $(SolutionDir)Scripts\install.cmd $(SolutionDir)external\$(PlatformTarget)-
     <PostBuildEvent />
     <PostBuildEvent>
       <Message>Install</Message>
-      <Command>if exist $(SolutionDir)install.cfg (
-call $(SolutionDir)Scripts\install.cmd $(TargetPath) $(SolutionDir)
-call $(SolutionDir)Scripts\install.cmd $(SolutionDir)external\$(PlatformTarget)-$(Configuration)\pdcurses.dll $(SolutionDir)
+      <Command>if exist "$(SolutionDir)install.cfg" (
+call "$(SolutionDir)Scripts\install.cmd" "$(TargetPath)" "$(SolutionDir)"
+call "$(SolutionDir)Scripts\install.cmd" "$(SolutionDir)external\$(PlatformTarget)-$(Configuration)\pdcurses.dll" "$(SolutionDir)"
 )</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
