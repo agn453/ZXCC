@@ -105,7 +105,7 @@ void xlt_name(char *localname, char *cpmname)
     int n;
 
     sprintf(ibuf, "%-.*s", CPM_MAXPATH, localname);
-    while (s = strpbrk(pname, DIRSEP))   /* find the last directory separator allows mixed \ and / in windows */
+    while ((s = strpbrk(pname, DIRSEP)))   /* find the last directory separator allows mixed \ and / in windows */
         pname = s + 1;
 
     if (pname == ibuf) {	/* No path separators in the name. It is therefore a
