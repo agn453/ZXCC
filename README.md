@@ -4,7 +4,7 @@
 
 This is John Elliott's CP/M 2/3 emulator for cross-compiling and
 running CP/M tools under Microsoft Windows and Linux/Unix/macOS.
-The ability to run under MS-DOS/DR-DOS is ino longer supported.
+The ability to run under MS-DOS/DR-DOS is no longer supported.
 
 This repository has been initially extracted from John Elliott's
 Stable version 0.5.7 source-code at
@@ -99,7 +99,7 @@ correct BDOS function 40 (Write with Zero-fill).
 * Mark Ogden has added the capability to build the ZXCC command-line
 programs under Microsoft Windows (using Visual Studio).  You'll find
 build instructions in the
-[winbuild/README.md](raw.githubusercontent.com/agn453/ZXCC/main/winbuild/README.md)
+[winbuild/README.md](https://raw.githubusercontent.com/agn453/ZXCC/main/winbuild/README.md)
 file.  Further details concerning the changes are in
 [changes.md](https://raw.githubusercontent.com/agn453/ZXCC/main/changes.md).
 
