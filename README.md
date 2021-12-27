@@ -107,6 +107,12 @@ file.  Further details concerning the changes are in
 to the local default directory.  Also, filenames under Windows can use either
 a forward slash ```/``` or back-slash ```\``` in the directory path.
 
+* Mark Ogden has cleaned up a number of warnings for the Windows build
+using Visual Studio and fixed some issues with the install script when
+it encountered spaces in a Windows directory pathname and the CPMDIR80
+environment variable determining the search paths for the CP/M binaries,
+libraries and include files.
+
 
 --
 
@@ -118,4 +124,4 @@ Andreas Gerlich) at http://www.mathematik.uni-ulm.de/users/ag/yaze-ag
 
 --
 
-Tony Nicholson 27-Dec-2021
+Tony Nicholson 28-Dec-2021
