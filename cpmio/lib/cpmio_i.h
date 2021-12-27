@@ -20,8 +20,19 @@
 */
 
 /* CPMIO: Internal declarations  */
-
+#ifndef _MSC_VER
 #include "config.h"
+#include <termios.h>
+#else
+#include "config-win.h"
+// conio.h moved before curses as PDCurses has macros
+// that conflict with conio.h 
+#include <windows.h>
+#include <conio.h>
+#include <io.h>
+#undef MOUSE_MOVED      /* causes conflict with PDcurses */
+#define PDC_DLL_BUILD   /* use the dll build of PDCurses */
+#endif
 
 #ifdef HAVE_NCURSES_H
 #include <ncurses.h>
@@ -30,24 +41,22 @@
 #ifdef HAVE_CURSES_H
 #include <curses.h>
 #endif
-
-#include <termios.h>
 #include <signal.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#ifdef HAVE_IO_H
-#include <io.h>
-#endif
 #include <time.h>
 #include <sys/types.h>
-#include <sys/time.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
 
 #include "cpmio.h"	/* The public declarations */
+
+#ifdef _MSC_VER
+#define RETSIGTYPE  void
+#endif
 
 RETSIGTYPE on_sigint(int a);
 

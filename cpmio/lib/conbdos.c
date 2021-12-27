@@ -51,79 +51,79 @@ extern int cpmio_using_curses;
 
 void cpm_console_bdos_init(void)
 {
-	func1 = 0;
-	kbchar = 0;
-	delimiter = '$';
-	list_echo = 0;
-	console_mode = 0;
-	cpm_typeahead = 0;
+    func1 = 0;
+    kbchar = 0;
+    delimiter = '$';
+    list_echo = 0;
+    console_mode = 0;
+    cpm_typeahead = 0;
 }
 
 /* BDOS functions */
 int cpm_bdos_1(void)	/* Console input with echo */
 {
-	char c;
-	int r;
+    char c;
+    int r;
 
-	func1 = 1;
-	do
-	{
-		c = conin();
+    func1 = 1;
+    do
+    {
+        c = conin();
 
-		if (printable(c)) 	/* Printable char. Echo it & return */
-		{			/* it. */
-			if (conout(c)) r = -1; else r = c;
-			func1 = 0;
+        if (printable(c)) 	/* Printable char. Echo it & return */
+        {			/* it. */
+            if (conout(c)) r = -1; else r = c;
+            func1 = 0;
 
-			return r;
-		}
-		if (console_mode & 2) break; 	/* If not checking ^S,      */
+            return r;
+        }
+        if (console_mode & 2) break; 	/* If not checking ^S,      */
                                                 /* return ctl codes as well */
-		if ( c == CTL_S && on_ctls()) 
-		{
-			func1 = 0;	/* ^S was followed by ^C */
-			return -1;
-		}
-	}
-	while (c != CTL_Q && c != CTL_P && c != CTL_S);
+        if ( c == CTL_S && on_ctls()) 
+        {
+            func1 = 0;	/* ^S was followed by ^C */
+            return -1;
+        }
+    }
+    while (c != CTL_Q && c != CTL_P && c != CTL_S);
 
-	func1 = 0;
-	return c;
+    func1 = 0;
+    return c;
 }
 
 int cpm_bdos_2(char c)
 {
-	/* TODO: Tab expansion? 
-	 *
-	 * if (!(console_mode & 0x14)) return tabout(c);
-	 *
-	 */
-	return conout(c);
+    /* TODO: Tab expansion? 
+     *
+     * if (!(console_mode & 0x14)) return tabout(c);
+     *
+     */
+    return conout(c);
 }
 
 
 
 int cpm_bdos_6(unsigned char c)	/* Direct console access */
 {
-	switch(c)
-	{
-		case 0xFF:	if (cpm_const()) return cpm_conin(); 
-				else             return 0;
-		case 0xFE:	return cpm_const();
-		case 0xFD:	return cpm_conin(); 
-		default: 	cpm_conout(c); break;
-	}
-	return 0;
+    switch(c)
+    {
+        case 0xFF:	if (cpm_const()) return cpm_conin(); 
+                else             return 0;
+        case 0xFE:	return cpm_const();
+        case 0xFD:	return cpm_conin(); 
+        default: 	cpm_conout(c); break;
+    }
+    return 0;
 }
 
 
 int cpm_bdos_9(char *buf)
 {
-	while (*buf != delimiter)
-	{
-		cpm_bdos_2(*buf++);
-	}
-	return 0;
+    while (*buf != delimiter)
+    {
+        cpm_bdos_2(*buf++);
+    }
+    return 0;
 }
 
 
@@ -155,36 +155,36 @@ unsigned cpm_bdos_10(unsigned char *buffer)
 #if USE_READLINE
 unsigned cpm_bdos_10(unsigned char *buffer)
 {
-	char *s;
+    char *s;
 
-	if (!cpmio_using_curses) cpm_scr_unit(); 
-	else 
-	{
-		refresh();
-		echo();
-	}
-	s = readline(""); 
-	if (!cpmio_using_curses) cpm_scr_init(); 
-	else
-	{
-		echo();
-	}
-	if (!s)
-	{
-		buffer[1] = 0;
-	}
-	if (strlen(s) > buffer[0])
-	{
-		buffer[1] = buffer[0];
-		strncpy(buffer + 2, s, buffer[0]);
-	}
-	else
-	{
-		buffer[1] = strlen(s);
-		strcpy(buffer + 2, s);
-	}
-	free(s);
-	return 0;
+    if (!cpmio_using_curses) cpm_scr_unit(); 
+    else 
+    {
+        refresh();
+        echo();
+    }
+    s = readline(""); 
+    if (!cpmio_using_curses) cpm_scr_init(); 
+    else
+    {
+        echo();
+    }
+    if (!s)
+    {
+        buffer[1] = 0;
+    }
+    if (strlen(s) > buffer[0])
+    {
+        buffer[1] = buffer[0];
+        strncpy(buffer + 2, s, buffer[0]);
+    }
+    else
+    {
+        buffer[1] = strlen(s);
+        strcpy(buffer + 2, s);
+    }
+    free(s);
+    return 0;
 }
 
 #else /* Not using MSDOS or readline */
@@ -192,92 +192,92 @@ unsigned cpm_bdos_10(unsigned char *buffer)
  * where char is signed, we can end up with a -ve buffer size. */
 unsigned cpm_bdos_10(unsigned char *buffer)
 {
-	char c;
-	int maxlen, curlen, curpos, editing, n;
+    char c;
+    int maxlen, curlen, curpos, editing, n;
         static char prev[20][257];
         int prevn = 0;
 
-	curlen = buffer[1];
-	maxlen = buffer[0];
-	buffer[curlen + 2] = 0;
-	editing = 1;
-	curpos = curlen;
+    curlen = buffer[1];
+    maxlen = buffer[0];
+    buffer[curlen + 2] = 0;
+    editing = 1;
+    curpos = curlen;
 
-	update(curlen, curpos, buffer + 2);
-	while (editing)
-	{	
-		c = cpm_conin();
+    update(curlen, curpos, buffer + 2);
+    while (editing)
+    {	
+        c = cpm_conin();
 
-		switch(c)
-		{
-			case '\n':
-			case '\r':
-				editing = 0;
-				break;	
-			case 8:
-			case 127:	/* Delete & Backspace */
-				if (!curpos || !curlen) break;
-				for (n = curpos + 1; n <= curlen + 2; n++)
-				{
-					buffer[n] = buffer[n+1];
-				}
-				--curlen;
-				update(curlen, curpos, buffer + 2);
-				--curpos;
-				break;
+        switch(c)
+        {
+            case '\n':
+            case '\r':
+                editing = 0;
+                break;	
+            case 8:
+            case 127:	/* Delete & Backspace */
+                if (!curpos || !curlen) break;
+                for (n = curpos + 1; n <= curlen + 2; n++)
+                {
+                    buffer[n] = buffer[n+1];
+                }
+                --curlen;
+                update(curlen, curpos, buffer + 2);
+                --curpos;
+                break;
 
-			case 'W' - '@':
-			case 'E' - '@':
-				if (c == 'E' - '@')
-				{
-					if (!prevn) prevn = 19; else --prevn;
-				}
-				n = prev[prevn][0];
-				if (n > buffer[0]) n = buffer[0];
-				++n;
-				memcpy(buffer + 1, &prev[prevn][0], n);
-				if (curlen > buffer[1]) 
-				{
-					memset(buffer + 2 + buffer[1],
-					       curlen - buffer[1], ' ');
-					update(curlen, curpos, buffer + 2);
-				}
-				curlen = buffer[1];
-				update(curlen, curpos, buffer + 2);
+            case 'W' - '@':
+            case 'E' - '@':
+                if (c == 'E' - '@')
+                {
+                    if (!prevn) prevn = 19; else --prevn;
+                }
+                n = prev[prevn][0];
+                if (n > buffer[0]) n = buffer[0];
+                ++n;
+                memcpy(buffer + 1, &prev[prevn][0], n);
+                if (curlen > buffer[1]) 
+                {
+                    memset(buffer + 2 + buffer[1],
+                           curlen - buffer[1], ' ');
+                    update(curlen, curpos, buffer + 2);
+                }
+                curlen = buffer[1];
+                update(curlen, curpos, buffer + 2);
                                 if (curpos > buffer[1]) curpos = buffer[1];
-				if (c == 'W' - '@') 
-				{
-					if (prevn < 20) ++prevn; else prevn = 0;
-				}
-				break;	
+                if (c == 'W' - '@') 
+                {
+                    if (prevn < 20) ++prevn; else prevn = 0;
+                }
+                break;	
 
                         case 3: /* Control-C */
                                 if (curpos == 0) return -1;
-				break;
+                break;
 
-			default:
-				if (c < 32 && c != 26) break;
-				if (curlen >= maxlen) break;
-				
-				if (curpos < curlen)
-				{
-					for (n = curlen; n > curpos; --n)
-					{
-						buffer[n + 2] = buffer[n + 1];
-					}
-				}
-				buffer[curpos + 2]   = c;
-				++curlen;
-				update(curlen, curpos, buffer + 2);
-				++curpos;
-				break;
-		}
-	}
-	buffer[1] = curlen;
-	for (n = 19; n > 0; n--) memcpy(&prev[n][0], &prev[n - 1][0], 257);
-	memcpy(&prev[0][0], buffer + 1, buffer[1] + 1);
+            default:
+                if (c < 32 && c != 26) break;
+                if (curlen >= maxlen) break;
+                
+                if (curpos < curlen)
+                {
+                    for (n = curlen; n > curpos; --n)
+                    {
+                        buffer[n + 2] = buffer[n + 1];
+                    }
+                }
+                buffer[curpos + 2]   = c;
+                ++curlen;
+                update(curlen, curpos, buffer + 2);
+                ++curpos;
+                break;
+        }
+    }
+    buffer[1] = curlen;
+    for (n = 19; n > 0; n--) memcpy(&prev[n][0], &prev[n - 1][0], 257);
+    memcpy(&prev[0][0], buffer + 1, buffer[1] + 1);
     cpm_conout('\r');
-	return 0;
+    return 0;
 }
 #endif /* no readline */
 #endif /* not DOS */
@@ -285,54 +285,54 @@ unsigned cpm_bdos_10(unsigned char *buffer)
 
 int cpm_bdos_11(void)			/* Poll console */
 {
-	char ch;
+    char ch;
 
-	if (console_mode & 1)
-	{
-		if (kbchar == 3) return 1;
-		if (!cpm_const()) return 0;
-		ch = cpm_conin();
-		if (ch == 3) return 1;
-		else kbchar = ch;
-		return 0;
-	}
-	if (console_mode & 2) return constat();
+    if (console_mode & 1)
+    {
+        if (kbchar == 3) return 1;
+        if (!cpm_const()) return 0;
+        ch = cpm_conin();
+        if (ch == 3) return 1;
+        else kbchar = ch;
+        return 0;
+    }
+    if (console_mode & 2) return constat();
 
-	/* Mimic undocmented "typeahead" behaviour */	
-	if ((cpm_typeahead == 0xFF) && !kbchar) return constat();
+    /* Mimic undocmented "typeahead" behaviour */	
+    if ((cpm_typeahead == 0xFF) && !kbchar) return constat();
 
-	return check_ctls(1);
+    return check_ctls(1);
 }
 
 
 unsigned int  cpm_bdos_109(unsigned int de)	/* Console mode set/get */
 {
-	if (de != 0xFFFF) console_mode = de;
+    if (de != 0xFFFF) console_mode = de;
 
-	return console_mode;
+    return console_mode;
 }
 
 
 unsigned char cpm_bdos_110(unsigned int de)	/* String delimiter set/get */
 {
-	if (de != 0xFFFF) delimiter = (de & 0xFF);
+    if (de != 0xFFFF) delimiter = (de & 0xFF);
 
-	return delimiter;
+    return delimiter;
 }
 
 int cpm_bdos_111(char *buf, unsigned int len)
 {
-	while(len) if (cpm_bdos_2(*buf++)) return -1;
+    while(len) if (cpm_bdos_2(*buf++)) return -1;
 
-	return 0;
+    return 0;
 }
 
 /* Set/clear the SCB "Typeahead" byte */
 int cpm_bdos_set_get_typeahead(int flag)
 {
-	if (flag > 0) cpm_typeahead = flag;
+    if (flag > 0) cpm_typeahead = flag;
 
-	return cpm_typeahead;
+    return cpm_typeahead;
 }
 
 
@@ -364,23 +364,23 @@ static char conin(void)
 /* Output character */
 static int conout(char c)
 {
-	if (!func1 && (check_ctls(0) == -1)) return -1;
+    if (!func1 && (check_ctls(0) == -1)) return -1;
 
-	cpm_conout(c);
+    cpm_conout(c);
 
 /* TODO: Printer echo? 
  *
  *	if (!(console_mode & 0x14) && list_echo) cpm_list(c);
  * 
  */
-	return 0;
+    return 0;
 }
 
 
 /* Is character "c" printable? */
 static int printable(char c)
 {
-	return (c == '\r' || c == '\n' || c == 9 || c == 8 || c >= 32);
+    return (c == '\r' || c == '\n' || c == 9 || c == 8 || c >= 32);
 }
 
 
@@ -388,68 +388,68 @@ static int printable(char c)
 
 static int on_ctls(void)
 {
-	char c;
+    char c;
 
-	do
-	{
-		c = cpm_conin();
-		if (c == CTL_C && (!(console_mode & 8))) return -1;
-	
-		if (c == CTL_Q) return 0;
-		if (c == CTL_P) 
-		{ 
-			list_echo ^= 1; 
-			if (list_echo) cpm_conout(7);
-		}
-	} 
-	while (c != CTL_Q && c != CTL_P);
+    do
+    {
+        c = cpm_conin();
+        if (c == CTL_C && (!(console_mode & 8))) return -1;
+    
+        if (c == CTL_Q) return 0;
+        if (c == CTL_P) 
+        { 
+            list_echo ^= 1; 
+            if (list_echo) cpm_conout(7);
+        }
+    } 
+    while (c != CTL_Q && c != CTL_P);
 
-	return 0;
+    return 0;
 }
 
 
 static int check_ctls(int called_by_func_11)
-				/* Returns -1 to exit, 
+                /* Returns -1 to exit, 
                                  *         0 no char waiting
                                  *         1 char waiting
                                  */          
 {
-	char ch;
+    char ch;
 
     if (file_conin || (console_mode & 2))
         return called_by_func_11 ? constat() : 0;   /* 0 if not using ctrl S */
 
-	ch = kbchar;
-	if (!(called_by_func_11 && kbchar))
-	{
-		if (ch != CTL_S)
-		{
-			if (!cpm_const()) return 0; 	/* Nothing waiting */
-			ch = cpm_conin();	/* Something was waiting   */
-		}
-	}
+    ch = kbchar;
+    if (!(called_by_func_11 && kbchar))
+    {
+        if (ch != CTL_S)
+        {
+            if (!cpm_const()) return 0; 	/* Nothing waiting */
+            ch = cpm_conin();	/* Something was waiting   */
+        }
+    }
 
-	if (ch == CTL_S)
-	{
-		if (kbchar == ch) kbchar = 0;
+    if (ch == CTL_S)
+    {
+        if (kbchar == ch) kbchar = 0;
 
-		/* Got a ^S */
+        /* Got a ^S */
 
-		if (on_ctls()) return -1;
-	}
-	if (!(console_mode & 1) && kbchar == 3) return 1;
-	if (ch != CTL_Q && ch != CTL_P) 
-	{
-		kbchar = ch; 
-		return 1;
-	}
-	return 0;
+        if (on_ctls()) return -1;
+    }
+    if (!(console_mode & 1) && kbchar == 3) return 1;
+    if (ch != CTL_Q && ch != CTL_P) 
+    {
+        kbchar = ch; 
+        return 1;
+    }
+    return 0;
 }
 
 
 static int constat(void)
 {
-	if (kbchar) return 1;
-	if (cpm_const()) return 1;
-	return 0;
+    if (kbchar) return 1;
+    if (cpm_const()) return 1;
+    return 0;
 }

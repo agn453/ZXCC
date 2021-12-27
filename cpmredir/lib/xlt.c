@@ -33,29 +33,29 @@ static void drdos_init(void)
   to use __dpmi_int() instead. */
 
 #ifdef __GO32__
-	__dpmi_regs ir;
+    __dpmi_regs ir;
 
-	ir.x.ax = 0x4452;	/* "DR" */
+    ir.x.ax = 0x4452;	/* "DR" */
 
-	__dpmi_int(0x21, &ir);
-	if (ir.x.flags & 1) return;	/* Not DRDOS */
+    __dpmi_int(0x21, &ir);
+    if (ir.x.flags & 1) return;	/* Not DRDOS */
 
-	redir_Msg("DRDOS detected.\r\n");
+    redir_Msg("DRDOS detected.\r\n");
 
-	redir_drdos = 1;	
+    redir_drdos = 1;	
 
 #else	/* __GO32__ */
 
-	union REGS ir, or;
+    union REGS ir, or;
 
-	ir.w.ax = 0x4452;	/* "DR" */
+    ir.w.ax = 0x4452;	/* "DR" */
 
-	intdos(&ir, &or);
-	if (or.w.cflag) return;	/* Not DRDOS */
+    intdos(&ir, &or);
+    if (or.w.cflag) return;	/* Not DRDOS */
 
-	redir_Msg("DRDOS detected.\r\n");
+    redir_Msg("DRDOS detected.\r\n");
 
-	redir_drdos = 1;	
+    redir_drdos = 1;	
 #endif	/* __GO32__ */
 }
 #endif	/* __MSDOS__ */
@@ -64,28 +64,28 @@ static void drdos_init(void)
 
 int fcb_init(void)
 {
-	int n;
+    int n;
 
-	/* A: to O: free */
-	for (n = 0; n < 15; n++) redir_drive_prefix[n][0] = 0;
+    /* A: to O: free */
+    for (n = 0; n < 15; n++) redir_drive_prefix[n][0] = 0;
 
-	strcpy(redir_drive_prefix[15], "./");	/* P: is current directory */
+    strcpy(redir_drive_prefix[15], "./");	/* P: is current directory */
 
-	/* Log on to P:. It is the only drive at this point which we
+    /* Log on to P:. It is the only drive at this point which we
          * know works. */
-	redir_cpmdrive = 15;
+    redir_cpmdrive = 15;
 #ifdef __MSDOS__
-	drdos_init();
+    drdos_init();
 #endif	
 
-	return 1;
+    return 1;
 }
 
 /* Deinitialise the library. */
 
 void fcb_deinit(void)
 {
-	/* Nothing */
+    /* Nothing */
 }
 
 /* Translate a name from the host FS to a CP/M name. This will (if necessary)
@@ -98,52 +98,56 @@ void fcb_deinit(void)
 
 void xlt_name(char *localname, char *cpmname)
 {
-	char ibuf[CPM_MAXPATH + 1];
-	char nbuf[CPM_MAXPATH + 1];
-	char *pname;
-	int n;
+    char ibuf[CPM_MAXPATH + 1];
+    char nbuf[CPM_MAXPATH + 1];
+    char *pname = ibuf;
+    char *s;
+    int n;
 
-	sprintf(ibuf, "%-.*s", CPM_MAXPATH, localname);
-	pname = strrchr(ibuf, '/'); 
-#ifdef __MSDOS__
-	if (!pname) pname = strrchr(ibuf,'\\');
-	if (!pname) pname = strrchr(ibuf,':');
-#endif
-	if (!pname)	/* No path separators in the name. It is therefore a
+    sprintf(ibuf, "%-.*s", CPM_MAXPATH, localname);
+    while (s = strpbrk(pname, DIRSEP))   /* find the last directory separator allows mixed \ and / in windows */
+        pname = s + 1;
+
+    if (pname == ibuf) {	/* No path separators in the name. It is therefore a
                            local filename, so map it to drive P: */
-	{
-		strcpy(cpmname, "p:");
-		strcat(cpmname, ibuf);
-		return;
-	}
-	++pname;
-	strcpy(nbuf, pname);	/* nbuf holds filename component */
-	*pname = 0;		/* ibuf holds path component */
+        strcpy(cpmname, "p:");
+        strcat(cpmname, ibuf);
+        return;
+    }
+    /* catch user specified current directory p: or P: */
+    if (pname == ibuf + 2 && ibuf[1] == ':' && (ibuf[0] == 'P' || ibuf[0] == 'p')) {
+        cpmname[0] = 'p';               /* make sure it's lower case */
+        strcpy(cpmname + 1, ibuf + 1);
+        return;
+    }
 
-	/* See if the path is one of those already mapped to drives */
-	
-	for (n = 0; n < 15; n++)
-	{
-		if (redir_drive_prefix[n][0] && !strcmp(ibuf, redir_drive_prefix[n]))
-		{
-			sprintf(cpmname,"%c:%s", n + 'a', nbuf);
-			return;
-		}
-	}
+    strcpy(nbuf, pname);	/* nbuf holds filename component */
+    *pname = 0;		/* ibuf holds path component */
 
-	/* It is not, see if another drive can be allocated */
+    /* See if the path is one of those already mapped to drives */
+    
+    for (n = 0; n < 15; n++)
+    {
+        if (redir_drive_prefix[n][0] && !strcmp(ibuf, redir_drive_prefix[n]))
+        {
+            sprintf(cpmname,"%c:%s", n + 'a', nbuf);
+            return;
+        }
+    }
 
-	for (n = 0; n < 15; n++) if (!redir_drive_prefix[n][0])
-	{
-		strcpy(redir_drive_prefix[n], ibuf);
+    /* It is not, see if another drive can be allocated */
+
+    for (n = 0; n < 15; n++) if (!redir_drive_prefix[n][0])
+    {
+        strcpy(redir_drive_prefix[n], ibuf);
                 sprintf(cpmname,"%c:%s", n + 'a', nbuf);
-		return;
-	}
+        return;
+    }
 
-	/* No other drive can be allocated */
+    /* No other drive can be allocated */
 
-	strcpy(cpmname,"p:");
-	strcat(cpmname, nbuf);
+    strcpy(cpmname,"p:");
+    strcat(cpmname, nbuf);
 }
 
 /* It is sometimes convenient to set some fixed mappings. This will create
@@ -153,21 +157,21 @@ void xlt_name(char *localname, char *cpmname)
 
 int xlt_map(int drive, char *localdir)
 {
-	int n;
+    int n;
 
-	if (drive == -1)
-	{
-		for (n = 0; n < 15; n++) if (!redir_drive_prefix[n][0]) 
-		{
-			drive = n;
-			break;
-		}
-		if (drive == -1) return 0;	/* No space for mappings */
-	}
-	if (redir_drive_prefix[drive][0]) return 0;	/* Drive taken */
+    if (drive == -1)
+    {
+        for (n = 0; n < 15; n++) if (!redir_drive_prefix[n][0]) 
+        {
+            drive = n;
+            break;
+        }
+        if (drive == -1) return 0;	/* No space for mappings */
+    }
+    if (redir_drive_prefix[drive][0]) return 0;	/* Drive taken */
 
         sprintf(redir_drive_prefix[drive], "%-.*s", CPM_MAXPATH, localdir);
-	return 1;
+    return 1;
 }
 
 
@@ -176,16 +180,16 @@ int xlt_map(int drive, char *localdir)
 
 int xlt_umap(int drive)
 {
-	if (!redir_drive_prefix[drive][0]) return 0;	/* Drive not taken */
-	redir_drive_prefix[drive][0] = 0;
-	return 1;
+    if (!redir_drive_prefix[drive][0]) return 0;	/* Drive not taken */
+    redir_drive_prefix[drive][0] = 0;
+    return 1;
 }
 
 
 char *xlt_getcwd(int drive)
 {
-	if (drive < 0 || drive > 16) return "";
+    if (drive < 0 || drive > 16) return "";
 
-	return redir_drive_prefix[drive];
+    return redir_drive_prefix[drive];
 }
 
