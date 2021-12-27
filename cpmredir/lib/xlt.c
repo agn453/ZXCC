@@ -105,7 +105,7 @@ void xlt_name(char *localname, char *cpmname)
     int n;
 
     sprintf(ibuf, "%-.*s", CPM_MAXPATH, localname);
-    while (s = strpbrk(pname, DIRSEP)) {  /* find the last directory separator allows mixed \ and / in windows */
+    while ((s = strpbrk(pname, DIRSEP))) {  /* find the last directory separator allows mixed \ and / in windows */
 #ifdef _WIN32
         if (*s == '\\')                   /* convert separators to common format so directory tracking works more efficiently */
             *s = '/';

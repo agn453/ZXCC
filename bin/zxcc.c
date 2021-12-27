@@ -309,18 +309,18 @@ int main(int ac, char **av)
      * the explict override takes precedence
      */
     char* tmpenv;
-    if (tmpenv = getenv("CPMDIR80")) {
+    if ((tmpenv = getenv("CPMDIR80"))) {
         mkpath(bindir80, tmpenv, BIN80);    /* use CPMDIR80 & std subdirs */
         mkpath(libdir80, tmpenv, LIB80);
         mkpath(incdir80, tmpenv, INC80);
     }
-    if (tmpenv = getenv("BINDIR80"))
+    if ((tmpenv = getenv("BINDIR80")))
         mkpath(bindir80, tmpenv, "");
 
-    if (tmpenv = getenv("LIBDIR80"))
+    if ((tmpenv = getenv("LIBDIR80")))
         mkpath(libdir80, tmpenv, "");
 
-    if (tmpenv = getenv("INCDIR80"))
+    if ((tmpenv = getenv("INCDIR80")))
         mkpath(incdir80, tmpenv, "");
 
 	xlt_map(0, bindir80);	/* Establish the 3 fixed mappings */

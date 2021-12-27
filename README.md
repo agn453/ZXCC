@@ -3,7 +3,8 @@
 ## Introduction
 
 This is John Elliott's CP/M 2/3 emulator for cross-compiling and
-running CP/M tools under MS-DOS and Linux/Unix/macOS.
+running CP/M tools under Microsoft Windows and Linux/Unix/macOS.
+The ability to run under MS-DOS/DR-DOS is no longer supported.
 
 This repository has been initially extracted from John Elliott's
 Stable version 0.5.7 source-code at
@@ -74,7 +75,7 @@ stdin redirection from a file, as well as a fix to the BDOS function 10
 bdos_rdline() routine to process new-line '\n' and '\r\n' correctly
 from file input.
 
-* Further tweeks from Mark Ogden for Console Line input. A NULL character
+* Further tweaks from Mark Ogden for Console Line input. A NULL character
 can now be read, and long-lines are truncated (as they would be on a real
 CP/M computer).  Control characters are also echoed using the ^ prefix.
 For example, Ctrl-Z echoes as ^Z (and is read by the emulated program
@@ -95,6 +96,17 @@ Also, the bios.bin file can be in the executable (BINDIR80) directory.
 * More from Michal Tomek - Fix compilation under Cygwin on Windows and
 correct BDOS function 40 (Write with Zero-fill).
 
+* Mark Ogden has added the capability to build the ZXCC command-line
+programs under Microsoft Windows (using Visual Studio).  You'll find
+build instructions in the
+[winbuild/README.md](https://raw.githubusercontent.com/agn453/ZXCC/main/winbuild/README.md)
+file.  Further details concerning the changes are in
+[changes.md](https://raw.githubusercontent.com/agn453/ZXCC/main/changes.md).
+
+* A fix was made so that any reference to the P: drive is now redirected
+to the local default directory.  Also, filenames under Windows can use either
+a forward slash ```/``` or back-slash ```\``` in the directory path.
+
 
 --
 
@@ -106,4 +118,4 @@ Andreas Gerlich) at http://www.mathematik.uni-ulm.de/users/ag/yaze-ag
 
 --
 
-Tony Nicholson 22-Dec-2021
+Tony Nicholson 27-Dec-2021
