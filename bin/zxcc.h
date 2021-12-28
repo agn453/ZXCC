@@ -3,18 +3,20 @@
  */
 #ifndef _WIN32
 #include "config.h"
-#ifndef CPMDIR80
-#define CPMDIR80 "/usr/local/lib/cpm/"
-#endif
 #define ISDIRSEP(c) ((c) == '/')
 #define DIRSEPCH	'/'
 #else
 #include "config-win.h"
-#ifndef CPMDIR80
-#define CPMDIR80 "d:/local/lib/cpm/"
-#endif
 #define ISDIRSEP(c) ((c) == '/' || (c) == '\\')
 #define DIRSEPCH	'\\'
+#endif
+
+#ifndef CPMDIR80
+#ifdef _MSC_VER
+#define CPMDIR80    "d:/local/lib/cpm/"
+#else
+#define CPMDIR80    "/usr/local/lib/cpm/"
+#endif
 #endif
 
 /* the default sub directories trailing / is required */

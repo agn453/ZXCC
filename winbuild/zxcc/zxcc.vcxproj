@@ -34,6 +34,7 @@
     <ClInclude Include="..\..\bin\z80ops.h" />
     <ClInclude Include="..\..\bin\zxbdos.h" />
     <ClInclude Include="..\..\bin\zxcbdos.h" />
+    <ClInclude Include="..\..\bin\zxcc.h" />
     <ClInclude Include="..\..\bin\zxdbdos.h" />
     <ClInclude Include="..\..\cpmio\include\cpmio.h" />
     <ClInclude Include="..\..\cpmredir\include\cpmredir.h" />
