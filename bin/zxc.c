@@ -43,7 +43,6 @@ int main(int argc, char **argv)
 	 */
 	strcpy(cmdbuf, "zxcc c.com --IC: ");
 
-
 	for (n = 1; n < argc; n++)
 	{
 		if (argv[n][0] == '-')	/* An option */
@@ -63,5 +62,4 @@ int main(int argc, char **argv)
 	}	
 	return system(cmdbuf);
 }
-
 
