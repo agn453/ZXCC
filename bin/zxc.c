@@ -46,8 +46,7 @@ int main(int argc, char **argv)
 	else if ((tmpenv = getenv("CPMDIR80")))
 		mkpath(incdir80, tmpenv, INC80 " ");
 
-	strcpy(cmdbuf, "zxcc c.com --I +");
-	strcat(cmdbuf, incdir80);
+	sprinf(cmdbuf, "zxcc c.com --I +%s ", incdir80);
 
 	for (n = 1; n < argc; n++)
 	{
