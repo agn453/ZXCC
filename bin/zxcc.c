@@ -267,7 +267,7 @@ int main(int ac, char **av)
     /* DJGPP includes the whole path in the program name, which looks 
          * untidy...
          */
-    while (str = strpbrk(progname, DIRSEP))
+    while ((str = strpbrk(progname, DIRSEP)))
         progname = str + 1;
 
 
