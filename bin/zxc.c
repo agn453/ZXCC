@@ -43,7 +43,7 @@ int main(int argc, char **argv)
 	char* tmpenv = getenv("INCDIR80");
 	if (tmpenv)
 		mkpath(incdir80, tmpenv, " ");
-	else if (tmpenv = getenv("CPMDIR80"))
+	else if ((tmpenv = getenv("CPMDIR80")))
 		mkpath(incdir80, tmpenv, INC80 " ");
 
 	strcpy(cmdbuf, "zxcc c.com --I +");
