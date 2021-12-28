@@ -267,8 +267,9 @@ int main(int ac, char **av)
     /* DJGPP includes the whole path in the program name, which looks 
          * untidy...
          */
-    str = strrchr(progname, '/'); 
-    if (str) progname = str + 1;
+    while (str = strpbrk(progname, DIRSEP))
+        progname = str + 1;
+
 
     if (sizeof(int) > 8 || sizeof(byte) != 1 || sizeof(word) != 2)
     {

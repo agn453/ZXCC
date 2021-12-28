@@ -5,10 +5,12 @@
 #include "config.h"
 #define ISDIRSEP(c) ((c) == '/')
 #define DIRSEPCH	'/'
+#define DIRSEP  "/"
 #else
 #include "config-win.h"
 #define ISDIRSEP(c) ((c) == '/' || (c) == '\\')
 #define DIRSEPCH	'\\'
+#define DIRSEP  "/\\:"
 #endif
 
 #ifndef CPMDIR80
