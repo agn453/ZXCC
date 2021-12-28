@@ -27,7 +27,7 @@ static char *drive_to_hostdrive(int cpm_drive)
 {
     static char prefix[CPM_MAXPATH];
     char *lpfp;
-    DWORD dw;
+    dword dw;
 
     if (!redir_drive_prefix[cpm_drive]) return NULL;
     dw = GetFullPathName(redir_drive_prefix[cpm_drive], sizeof(prefix),
@@ -154,7 +154,7 @@ static cpm_byte exdpb[0x11] = {
 cpm_word fcb_getdpb(cpm_byte *dpb)
 {
 #ifdef _MSC_VER
-    DWORD spc, bps, fc, tc;
+    dword spc, bps, fc, tc;
     unsigned bsh, blm, psh, phm;
     char *hostd = drive_to_hostdrive(redir_cpmdrive);
 
@@ -230,8 +230,8 @@ cpm_word fcb_getalv(cpm_byte *alv, cpm_word max)
 cpm_word fcb_dfree (cpm_byte drive, cpm_byte *dma)
 {
 #ifdef _MSC_VER
-    DWORD spc, bps, fc, tc;
-    DWORD freerec;
+    dword spc, bps, fc, tc;
+    dword freerec;
     char *hostd = drive_to_hostdrive(drive);
     
     if (!hostd) return 0x01FF;

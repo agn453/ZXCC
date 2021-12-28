@@ -93,7 +93,6 @@ int truncate(const char* path, off_t length); /* see util.c */
 
 typedef unsigned long dword;	/* Must be at least 32 bits, and
                                    >= sizeof(int) */
-typedef unsigned long DWORD;
 
 #ifdef CPMDEF
     #define EXT
