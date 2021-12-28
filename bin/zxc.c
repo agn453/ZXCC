@@ -7,7 +7,7 @@
 #include <ctype.h>
 
 static char cmdbuf[1024];
-char incdir80[CPM_MAXPATH] = { INCDIR80 };
+char incdir80[CPM_MAXPATH] = { INCDIR80 " "};
 
 static void mkpath(char* fullpath, char* path, char* subdir);
 int fname_opt(char *arg, char c)
