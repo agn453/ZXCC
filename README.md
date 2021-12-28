@@ -113,6 +113,9 @@ it encountered spaces in a Windows directory pathname and the CPMDIR80
 environment variable determining the search paths for the CP/M binaries,
 libraries and include files.
 
+* Modified the compiler front-end (zxc) to support environment variables
+for INCDIR80 or CPMDIR80 and more changes to build with Cygwin on Windows
+from Mark Ogden.
 
 --
 
