@@ -119,9 +119,9 @@ void xlt_name(char *localname, char *cpmname)
         strcat(cpmname, ibuf);
         return;
     }
-    /* catch user specified current directory p: or P: */
-    if (pname == ibuf + 2 && ibuf[1] == ':' && (ibuf[0] == 'P' || ibuf[0] == 'p')) {
-        cpmname[0] = 'p';               /* make sure it's lower case */
+    /* catch user specified current drive a,b,c,p or A,B,C,P only, which map to predefined directories  */
+    if (pname == ibuf + 2 && ibuf[1] == ':' && (s = strchr("aAbBcCpP", ibuf[0]))) {
+        cpmname[0] = tolower(*s);             /* make sure it's lower case */
         strcpy(cpmname + 1, ibuf + 1);
         return;
     }
