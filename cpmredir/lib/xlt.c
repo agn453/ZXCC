@@ -22,7 +22,7 @@
 */
 
 #include "cpmint.h"
-
+static char* skipUser(char* localname);
 /* Detect DRDOS */
 
 #ifdef __MSDOS__
@@ -104,7 +104,8 @@ void xlt_name(char *localname, char *cpmname)
     char *s;
     int n;
 
-    sprintf(ibuf, "%-.*s", CPM_MAXPATH, localname);
+    sprintf(ibuf, "%-.*s", CPM_MAXPATH, skipUser(localname));
+
     while ((s = strpbrk(pname, DIRSEP))) {  /* find the last directory separator allows mixed \ and / in windows */
 #ifdef _WIN32
         if (*s == '\\')                   /* convert separators to common format so directory tracking works more efficiently */
@@ -119,6 +120,7 @@ void xlt_name(char *localname, char *cpmname)
         strcat(cpmname, ibuf);
         return;
     }
+
     /* catch user specified current drive a,b,c,p or A,B,C,P only, which map to predefined directories  */
     if (pname == ibuf + 2 && ibuf[1] == ':' && (s = strchr("aAbBcCpP", ibuf[0]))) {
         cpmname[0] = tolower(*s);             /* make sure it's lower case */
@@ -198,3 +200,17 @@ char *xlt_getcwd(int drive)
     return redir_drive_prefix[drive];
 }
 
+/* as zxcc doesn't really support user spaces, remove any user specification
+ *if followed by colon letter colon
+ */
+static char* skipUser(char* localname) {
+    char* s = localname;
+    int user = 0;
+    char drive;
+    while (isdigit(*s))
+        user = user * 10 + *s++ - '0';
+    if (user <= 31 && *s++ == ':' && 'a' <= (drive = tolower(s[0])) && drive <= 'p' && s[1] == ':')
+        return s;
+    return localname;
+
+}
