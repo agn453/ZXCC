@@ -22,7 +22,7 @@
 */
 
 #include "cpmint.h"
-
+static char* skipUser(char* localname);
 /* Detect DRDOS */
 
 #ifdef __MSDOS__
@@ -104,7 +104,8 @@ void xlt_name(char *localname, char *cpmname)
     char *s;
     int n;
 
-    sprintf(ibuf, "%-.*s", CPM_MAXPATH, localname);
+    sprintf(ibuf, "%-.*s", CPM_MAXPATH, skipUser(localname));
+
     while ((s = strpbrk(pname, DIRSEP))) {  /* find the last directory separator allows mixed \ and / in windows */
 #ifdef _WIN32
         if (*s == '\\')                   /* convert separators to common format so directory tracking works more efficiently */
@@ -119,6 +120,7 @@ void xlt_name(char *localname, char *cpmname)
         strcat(cpmname, ibuf);
         return;
     }
+
     /* catch user specified current drive a,b,c,p or A,B,C,P only, which map to predefined directories  */
     if (pname == ibuf + 2 && ibuf[1] == ':' && (s = strchr("aAbBcCpP", ibuf[0]))) {
         cpmname[0] = tolower(*s);             /* make sure it's lower case */
@@ -198,3 +200,42 @@ char *xlt_getcwd(int drive)
     return redir_drive_prefix[drive];
 }
 
+/* as zxcc doesn't really support user spaces, remove any user specification
+ *hitech c supports
+ * [[0-9]+[:]][[a-pA-P]:]name[.ext] | [[a-pA-p][[0-9]+]:]name[.ext]
+ * this function also checks that user is no more than 2 digits and user # <= 31
+ * the hitech fcb checks for : as char 2, 3, or 4 which aligns to this
+ */
+static char* skipUser(char* localname) {
+    char* s;
+    int user;
+    int drive;
+
+    if (!localname || !(s = strchr(localname, ':')) || s > localname + 3)
+        return localname;
+    s = localname;
+    if (isdigit(*s)) {
+        user = *s++ - '0';
+        if (isdigit(*s)) {
+            user = user * 10 + *s++ - '0';
+            if (user > 31)              /* check sensible user id */
+                return localname;
+        }
+        if (*s == ':')                    /* just strip the user id assume rest is a filename */
+            return s + 1;
+        if ('a' <= (drive = tolower(*s)) && drive <= 'p' && s[1] == ':')
+            return s;                     /* was form [0-9]+[a-pA-P] so strip user id */
+        else
+            return localname;           /* not vaild so don't change */
+    }
+    if ((drive = tolower(*s++)) < 'a' ||  'p' < drive || !isdigit(*s))
+        return localname;               /* not a valid drive prefix or simple drive spec */
+
+    user = *s++ - '0';
+    if (isdigit(*s))
+        user = user * 10 + *s++ - '0';
+    if (*s != ':' || user > 31)
+        return localname;
+    *--s = drive;                       /* reinsert the drive just before the : */
+    return s;
+}
