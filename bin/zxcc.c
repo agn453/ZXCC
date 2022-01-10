@@ -39,10 +39,14 @@ char *parse_to_fcb(char *s, int afcb)
     RAM[afcb] = 0;
     memset(fcb, ' ', 11);
 
+    while (s[0]==' ')	/* skip leading spaces */
+    {
+        s++;
+    }
     while (1)
     {
         if (s[0] == 0) break;	
-        if (s[0] == ' ') {++s; continue; }
+        if (s[0] == ' ') break;
         if (s[1] == ':')
         {
             RAM[afcb] = s[0] - '@';
