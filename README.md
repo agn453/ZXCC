@@ -91,7 +91,8 @@ restore the previous behaviour.
 
 * Michal Tomek has added environment variables for BINDIR80,
 INCDIR80 and LIBDIR80 to allow overriding the compiled-in defaults.
-Also, the ```bios.bin``` file can be in the executable (BINDIR80) directory.
+Also, the ```bios.bin``` file can be in the same directory as the
+ZXCC executable or with the CP/M .COM files.
 
 * More from Michal Tomek - Fix compilation under Cygwin on Windows and
 correct BDOS function 40 (Write with Zero-fill).
