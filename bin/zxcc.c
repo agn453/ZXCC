@@ -137,9 +137,12 @@ void load_bios(void)
     if (!fp)
     {
 #ifdef _MSC_VER
-        dir[0] = 0;                           /* use strncat in case the path is very long */
+        dir[0] = 0;	/* use strncat in case the path is very long */
         strncat(dir, _pgmptr, CPM_MAXPATH - 8);   /* copy the executable path */
-#else 
+#elif defined(__APPLE__)
+	uint32_t size = CPM_MAXPATH - 8;
+	_NSGetExecutablePath(dir, &size);
+#else
         readlink("/proc/self/exe", dir, CPM_MAXPATH - 8);   /* allow room for bios.bin */
 #endif
         q = strrchr(dir, DIRSEPCH);
