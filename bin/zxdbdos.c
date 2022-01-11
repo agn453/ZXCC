@@ -30,10 +30,10 @@ int fcbforce(byte *fcb, byte *odrv)
 	if (*fcb) return 0;	/* not using default drive */
 
 	/* Microsoft BASIC compiler run-time */
-	if (!strcasecmp(nam,"BCLOAD  ") && !strcasecmp(typ, "   ")) drive = 2;
+	if (!strcmp(nam,"BCLOAD  ") && !strcmp(typ, "   ")) drive = 2;
 
 	/* HI-TECH C options help file */
-	if (!strcasecmp(nam,"OPTIONS ") && !strcasecmp(typ, "   ")) drive = 1;
+	if (!strcmp(nam,"OPTIONS ") && !strcmp(typ, "   ")) drive = 1;
 
 	/* binaries, libraries and object files */
 	if (!strcmp(typ, "COM")) drive = 1;
@@ -41,11 +41,11 @@ int fcbforce(byte *fcb, byte *odrv)
 	if (!strcmp(typ, "OBJ")) drive = 2; 
 
 	/* some extras for messages, overlays, includes */
-	if (!strcasecmp(typ, "HLP")) drive = 1;
-	if (!strcasecmp(typ, "MSG")) drive = 1;
-	if (!strcasecmp(typ, "OVR")) drive = 1;
-	if (!strcasecmp(typ, "REL")) drive = 2;
-	if (!strcasecmp(typ, "H  ")) drive = 3;
+	if (!strcmp(typ, "HLP")) drive = 1;
+	if (!strcmp(typ, "MSG")) drive = 1;
+	if (!strcmp(typ, "OVR")) drive = 1;
+	if (!strcmp(typ, "REL")) drive = 2;
+	if (!strcmp(typ, "H  ")) drive = 3;
 
 	if (!drive) return 0;
 	
