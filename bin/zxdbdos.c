@@ -22,7 +22,7 @@ int fcbforce(byte *fcb, byte *odrv)
 	int n;
 
 	for (n = 0; n < 8; n++) nam[n] = fcb[n+1] & 0x7F;
-	nam[3] = 0;
+	nam[8] = 0;
 	for (n = 0; n < 3; n++) typ[n] = fcb[n+9] & 0x7F;
 	typ[3] = 0;
 
