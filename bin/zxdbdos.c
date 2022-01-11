@@ -17,17 +17,35 @@
 int fcbforce(byte *fcb, byte *odrv)
 {
 	byte drive;
+	char nam[9];
 	char typ[4];	
 	int n;
 
+	for (n = 0; n < 8; n++) nam[n] = fcb[n+1] & 0x7F;
+	nam[3] = 0;
 	for (n = 0; n < 3; n++) typ[n] = fcb[n+9] & 0x7F;
 	typ[3] = 0;
 
 	drive = 0;
 	if (*fcb) return 0;	/* not using default drive */
+
+	/* Microsoft BASIC compiler run-time */
+	if (!strcasecmp(nam,"BCLOAD  ") && !strcasecmp(typ, "   ")) drive = 2;
+
+	/* HI-TECH C options help file */
+	if (!strcasecmp(nam,"OPTIONS ") && !strcasecmp(typ, "   ")) drive = 1;
+
+	/* binaries, libraries and object files */
 	if (!strcmp(typ, "COM")) drive = 1;
 	if (!strcmp(typ, "LIB")) drive = 2; 
 	if (!strcmp(typ, "OBJ")) drive = 2; 
+
+	/* some extras for messages, overlays, includes */
+	if (!strcasecmp(typ, "HLP")) drive = 1;
+	if (!strcasecmp(typ, "MSG")) drive = 1;
+	if (!strcasecmp(typ, "OVR")) drive = 1;
+	if (!strcasecmp(typ, "REL")) drive = 2;
+	if (!strcasecmp(typ, "H  ")) drive = 3;
 
 	if (!drive) return 0;
 	

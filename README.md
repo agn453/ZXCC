@@ -133,6 +133,14 @@ the binaries (in BINDIR80 emulated as drive A:).
 * The search for ```bios.bin``` on macOS should not use Linux-style
 /proc path.
 
+* Add some hints on where to find some extra files.  In addition to the
+previous locations for ```.COM``` binaries, ```.LIB``` libraries and
+object files ```.OBJ``` (in the bin80 and lib80 locations), ZXCC now
+searches for ```.HLP```, ```.MSG``` and ```.OVR``` files in bin80, ```.REL```
+in lib80 and ```.H``` header files in include80.  The Microsoft BASIC-80
+compiler run-time ```BCLOAD.``` can be in the lib80, and HI-TECH C options
+help ```OPTIONS``` in the bin80 locations.
+
 
 --
 
