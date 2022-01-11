@@ -199,29 +199,30 @@ void load_comfile(void)
     char fname[CPM_MAXPATH + 1];
     FILE *fp;
 
-	strcpy(fname, bindir80);
-    strcat(fname, argv[1]);
-        fp = try_com(fname);
-        if (!fp) 
+    /* Look in current directory first */
+    strcpy(fname, argv[1]);
+    fp = try_com(fname);
+    if (!fp) 
     {
-        strcpy(fname, argv[1]);
+        strcpy(fname, bindir80);
+        strcat(fname, argv[1]);
         fp = try_com(fname);
     }
-        if (!fp)
-        {
-                fprintf(stderr,"%s: Cannot locate %s, %s.com, %s.COM, %s.cpm _or_ %s.CPM\r\n", 
-                               progname, argv[1], argv[1], argv[1], argv[1], argv[1]);
+    if (!fp)
+    {
+        fprintf(stderr,"%s: Cannot locate %s, %s.com, %s.COM, %s.cpm _or_ %s.CPM\r\n", 
+                progname, argv[1], argv[1], argv[1], argv[1], argv[1]);
         zxcc_term();
-                zxcc_exit(1);
-        }
-        com_len = fread(RAM + 0x0100, 1, 0xFD00, fp);
-        if (com_len < 1 || ferror(fp))
-        {
-                fclose(fp);
-                fprintf(stderr,"%s: Cannot load %s\n", progname, fname);
+        zxcc_exit(1);
+    }
+    com_len = fread(RAM + 0x0100, 1, 0xFD00, fp);
+    if (com_len < 1 || ferror(fp))
+    {
+        fclose(fp);
+        fprintf(stderr,"%s: Cannot load %s\n", progname, fname);
         zxcc_term();
-                zxcc_exit(1);
-        }
+        zxcc_exit(1);
+    }
     fclose(fp);
     
     Msg("Loaded %d bytes from %s\n", com_len, fname);

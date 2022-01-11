@@ -125,8 +125,10 @@ of Jon Saxton's and HI-TECH C (see the
 file for details).  Also, user area specifications on CP/M filenames have
 been removed - since they're not implemented by ZXCC.
 
-* Fix parsing of spaces in the FCBs - resolving issue #39
+* Fix parsing of spaces in the FCBs - resolving issue #39.
 
+* Look for CP/M COM file in current directory (emulated drive P:) before
+the binaries (in BINDIR80 emulated as drive A:).
 
 --
 
