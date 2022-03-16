@@ -151,7 +151,7 @@ cpm_word fcb_open(cpm_byte* fcb, cpm_byte* dma)
 				 */
 
 	/* Get the file length */
-	redir_wr32(fcb + LENGTH_OFFSET, zxlseek(handle, 0, SEEK_CUR));
+	redir_wr32(fcb + LENGTH_OFFSET, zxlseek(handle, 0, SEEK_END));
 	zxlseek(handle, 0, SEEK_SET);
 
 	/* Set the last record byte count */
@@ -170,7 +170,7 @@ cpm_word fcb_close(cpm_byte* fcb)
 	SHOWNAME("fcb_close")
 
 		if ((handle = redir_verify_fcb(fcb)) < 0) return -1;
-	redir_Msg("         (at   %lx)\n", zxlseek(handle, 0, SEEK_END));
+	redir_Msg("         (at   %lx)\n", zxlseek(handle, 0, SEEK_CUR));
 
 	if (fcb[0] & 0x80)	/* Close directory */
 	{
@@ -489,10 +489,8 @@ cpm_word fcb_randwr(cpm_byte* fcb, cpm_byte* dma)
 		/* Update the file length */
 	len = redir_rd32(fcb + LENGTH_OFFSET);
 	/* PMO: Bug fix, account for the data just written */
-	if (len < offs + rv) {
+	if (len < offs + rv)
 		redir_wr32(fcb + LENGTH_OFFSET, offs + rv);
-		fcb[0x20] = (offs + rv) % 256;
-	}
 
 	if (rv < redir_rec_len) return 1;	/* disk full */
 	return 0;
@@ -768,8 +766,7 @@ cpm_word fcb_chmod(cpm_byte* fcb, cpm_byte* dma)
 		newoffs = offs = ((st.st_size + 127) / 128) * 128;
 		if (fcb[0x20] & 0x7F)
 		{
-			newoffs -= fcb[0x20] & 0x7f;
-			//newoffs -= (0x80 - (fcb[0x20] & 0x7F));
+			newoffs -= (0x80 - (fcb[0x20] & 0x7F));
 		}
 		if (newoffs == st.st_size)
 		{
