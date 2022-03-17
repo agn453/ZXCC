@@ -142,6 +142,13 @@ in lib80 and ```.H``` header files in include80.  The Microsoft BASIC-80
 compiler run-time ```BCLOAD.``` can be in the lib80, and HI-TECH C options
 help ```OPTIONS``` in the bin80 locations.
 
+* The exact file size changes have been reverted to behave like the
+original John Elliott version - and now use the DOS Plus convention.
+The HI-TECH Z80 C behaviour has been altered too as at v3.09-13 to
+support this.  Please see the HI TECH Z80 C repository at
+https://github.com/agn453/HI-TECH-Z80-C for details and to update
+to the latest version.
+
 
 --
 
@@ -154,4 +161,4 @@ Andreas Gerlich) at http://www.mathematik.uni-ulm.de/users/ag/yaze-ag
 --
 
 Tony Nicholson
-12-Jan-2022
+18-Mar-2022
