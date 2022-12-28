@@ -119,8 +119,8 @@ for INCDIR80 or CPMDIR80 and more changes to build with Cygwin on Windows
 from Mark Ogden.
 
 * Finally fixed by Mark Ogden (much appreciated) is an issue that affected
-the processing of the $$exec.$$$ file by HI-TECH C's batch processing.  This
-changes the way ZXCC implements "exact file size" handling to match that
+the processing of the ```$$exec.$$$``` file by HI-TECH C's batch processing.
+This changes the way ZXCC implements "exact file size" handling to match that
 of Jon Saxton's and HI-TECH C (see the
 [README.md](https://raw.githubusercontent.com/agn453/HI-TECH-Z80-C/master/README.md)
 file for details).  Also, user area specifications on CP/M filenames have
