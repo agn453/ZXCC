@@ -64,9 +64,9 @@ this time into ZXCC.
 emulator.  The original code in ZXCC was based on incorrect documentation
 of the DAA instruction in the Zilog and Mostek programming manuals (and
 even in Rodney Zaks "Programming the Z80" book).  The most recent
-documentation from Zilog has the correct description(1).  With this
+documentation from Zilog has the correct description[^1].  With this
 fix in-place ZXCC is able to run the Z80 instruction emulator
-test suite ZEXDOC from yaze-ag(2).  You can download a copy of the
+test suite ZEXDOC from yaze-ag[^2].  You can download a copy of the
 CP/M binary for ZEXDOC from
 https://raw.githubusercontent.com/agn453/ZEXALL/main/zexdoc.com
 
@@ -152,13 +152,13 @@ to the latest version.
 
 --
 
-(1) The most recent Zilog Z80 Family CPU User Manual (UM008001-1000)
+[^1]: The most recent Zilog Z80 Family CPU User Manual (UM008001-1000)
 can be found at http://www.zilog.com/docs/z80/z80cpu_um.pdf
 
-(2) You'll find the final version of yaze-ag 2.51.1 (as curated by
+[^2]: You'll find the final version of yaze-ag 2.51.1 (as curated by
 Andreas Gerlich) at http://www.mathematik.uni-ulm.de/users/ag/yaze-ag
 
 --
 
 Tony Nicholson
-18-Mar-2022
+06-Jan-2024
