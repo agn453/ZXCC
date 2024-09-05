@@ -1,11 +1,12 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(lib/cpmredir.c)
+AC_INIT([cpmredir],[1.1.4])
+AC_CONFIG_SRCDIR([lib/cpmredir.c])
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_MACRO_DIR(m4)
 VERSION=1.1.4
 UPDATED='December 28, 2013'
-AM_INIT_AUTOMAKE(cpmredir, $VERSION)
-AM_CONFIG_HEADER(config.h)
+AM_INIT_AUTOMAKE
+AC_CONFIG_HEADERS([config.h])
 LT_INIT
 
 dnl Checks for programs.
@@ -15,7 +16,6 @@ dnl Checks for libraries.
 
 dnl Checks for header files.
 AC_HEADER_DIRENT
-AC_HEADER_STDC
 AC_CHECK_HEADERS(fcntl.h unistd.h sys/vfs.h windows.h winnt.h utime.h)
 
 dnl Checks for typedefs, structures, and compiler characteristics.
@@ -27,4 +27,6 @@ AC_FUNC_UTIME_NULL
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS(mkdir rmdir)
 
-AC_OUTPUT(Makefile include/Makefile lib/Makefile)
+AC_CONFIG_FILES([Makefile include/Makefile lib/Makefile])
+AC_OUTPUT
+
