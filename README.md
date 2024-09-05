@@ -149,8 +149,11 @@ support this.  Please see the HI TECH Z80 C repository at
 https://github.com/agn453/HI-TECH-Z80-C for details and to update
 to the latest version.
 
-
---
+* Jim Burlingame provided updates to the autotools build system to
+allow building under recent versions of Linux/macOS using
+the ```.configure ; make ; make install``` method.  This has been
+tested and verified to work with Debian Bookworm (and variants)
+and macOS Sonoma (x86 and arm).
 
 [^1]: The most recent Zilog Z80 Family CPU User Manual (UM008001-1000)
 can be found at http://www.zilog.com/docs/z80/z80cpu_um.pdf
@@ -161,4 +164,4 @@ Andreas Gerlich) at http://www.mathematik.uni-ulm.de/users/ag/yaze-ag
 --
 
 Tony Nicholson
-06-Jan-2024
+06-Sep-2024
