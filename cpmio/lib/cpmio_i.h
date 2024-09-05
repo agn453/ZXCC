@@ -54,7 +54,7 @@
 
 #include "cpmio.h"	/* The public declarations */
 
-#ifdef _MSC_VER
+#ifndef RETSIGTYPE
 #define RETSIGTYPE  void
 #endif
 

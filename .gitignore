@@ -1,0 +1,24 @@
+# cache files
+stamp-h1
+autom4te.cache
+.deps
+config.log
+config.status
+
+# generated files
+Makefile
+config.h
+libtool
+*.o
+*~
+
+# programs
+bin/zxas
+bin/zxc
+bin/zxcc
+bin/zxlibr
+bin/zxlink
+
+# libraries
+cpmio/lib/libcpmio.a
+cpmredir/lib/libcpmredir.a
