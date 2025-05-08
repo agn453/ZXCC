@@ -155,6 +155,15 @@ the ```.configure ; make ; make install``` method.  This has been
 tested and verified to work with Debian Bookworm (and variants)
 and macOS Sonoma (x86 and arm).
 
+* Further updates to the autotools build system to permit building
+on systems with updated versions of the autotools scripts.  I've
+included the script file mentioned by Martin in the comments for issue #47
+to accomplish this if needed.  You'll need to have the ```automake``` package
+(and prerequisites) installed to run the ```./update-configure.sh```
+script.  On Linux use ```sudo apt install automake``` or similar, and
+under macOS with brew use ```brew install automake``` to install them.
+
+
 [^1]: The most recent Zilog Z80 Family CPU User Manual (UM008001-1000)
 can be found at http://www.zilog.com/docs/z80/z80cpu_um.pdf
 
@@ -163,5 +172,4 @@ Andreas Gerlich) at http://www.mathematik.uni-ulm.de/users/ag/yaze-ag
 
 --
 
-Tony Nicholson
-06-Sep-2024
+Tony Nicholson, Friday 09-May-2025
