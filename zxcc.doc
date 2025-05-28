@@ -111,6 +111,9 @@ Using zxcc
    zxlibr
           The equivalent of LIBR.COM.
 
+   zxobjtohex
+          The equivalent of OBJTOHEX.COM.
+
    All these programs work by converting their arguments to a form
    suitable for zxcc, and then invoking zxcc.
 
