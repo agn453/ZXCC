@@ -163,6 +163,9 @@ to accomplish this if needed.  You'll need to have the ```automake``` package
 script.  On Linux use ```sudo apt install automake``` or similar, and
 under macOS with brew use ```brew install automake``` to install them.
 
+* Martin contributed an update to add support to run the ```OBJTOHEX.COM```
+tool with a new ```zxobjtohex``` wrapper.
+
 
 [^1]: The most recent Zilog Z80 Family CPU User Manual (UM008001-1000)
 can be found at http://www.zilog.com/docs/z80/z80cpu_um.pdf
@@ -172,4 +175,4 @@ Andreas Gerlich) at http://www.mathematik.uni-ulm.de/users/ag/yaze-ag
 
 --
 
-Tony Nicholson, Friday 09-May-2025
+Tony Nicholson, Thursday 29-May-2025
