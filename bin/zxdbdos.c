@@ -44,7 +44,9 @@ int fcbforce(byte *fcb, byte *odrv)
 	if (!strcmp(typ, "HLP")) drive = 1;
 	if (!strcmp(typ, "MSG")) drive = 1;
 	if (!strcmp(typ, "OVR")) drive = 1;
+	if (!strcmp(typ, "OVL")) drive = 1;
 	if (!strcmp(typ, "REL")) drive = 2;
+	if (!strcmp(typ, "IRL")) drive = 2;
 	if (!strcmp(typ, "H  ")) drive = 3;
 
 	if (!drive) return 0;

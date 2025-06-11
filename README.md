@@ -151,7 +151,7 @@ to the latest version.
 
 * Jim Burlingame provided updates to the autotools build system to
 allow building under recent versions of Linux/macOS using
-the ```.configure ; make ; make install``` method.  This has been
+the ```./configure ; make ; make install``` method.  This has been
 tested and verified to work with Debian Bookworm (and variants)
 and macOS Sonoma (x86 and arm).
 
@@ -166,6 +166,10 @@ under macOS with brew use ```brew install automake``` to install them.
 * Martin contributed an update to add support to run the ```OBJTOHEX.COM```
 tool with a new ```zxobjtohex``` wrapper.
 
+* I added some extra hints to support the Digital Research PL/I-80 V1.3
+compiler (```*.OVL``` overlays in the BINDIR80 folder and the PL/I
+library ```PLILIB.IRL``` in the LIBDIR80 folder).
+
 
 [^1]: The most recent Zilog Z80 Family CPU User Manual (UM008001-1000)
 can be found at http://www.zilog.com/docs/z80/z80cpu_um.pdf
@@ -175,4 +179,4 @@ Andreas Gerlich) at http://www.mathematik.uni-ulm.de/users/ag/yaze-ag
 
 --
 
-Tony Nicholson, Thursday 29-May-2025
+Tony Nicholson, Thursday 12-Jun-2025
