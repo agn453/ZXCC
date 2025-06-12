@@ -37,8 +37,8 @@
 #define Z80_save  5
 #define Z80_log   6
 
-unsigned int in();
-unsigned int out();
+unsigned int in(int, int, int);
+unsigned int out(int, int, int, int);
 int interrupt();
 int snapload();
 void snapsave();

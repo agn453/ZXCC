@@ -168,7 +168,8 @@ tool with a new ```zxobjtohex``` wrapper.
 
 * I added some extra hints to support the Digital Research PL/I-80 V1.3
 compiler (```*.OVL``` overlays in the BINDIR80 folder and the PL/I
-library ```PLILIB.IRL``` in the LIBDIR80 folder).
+library ```PLILIB.IRL``` in the LIBDIR80 folder).  Also fixed some missing
+prototypes to silence compiler warnings under macOS (using clang).
 
 
 [^1]: The most recent Zilog Z80 Family CPU User Manual (UM008001-1000)

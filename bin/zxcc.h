@@ -90,6 +90,8 @@ void dump_regs(FILE *fp, byte a, byte b, byte c, byte d, byte e, byte f,
 void Msg(char *s, ...);
 int zxcc_term(void);
 void zxcc_exit(int code);
+unsigned int in(int, int, int);
+unsigned int out(int, int, int, int);
 
 /* Global variables */
 

@@ -45,6 +45,3 @@ gsx_byte gsxrd(gsx_word addr);
 void gsxwr(gsx_word addr, gsx_byte value);
 #endif
 
-void cpmbdos();
-void cpmbios();
-

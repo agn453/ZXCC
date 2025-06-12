@@ -231,8 +231,8 @@ void load_comfile(void)
     Msg("Loaded %d bytes from %s\n", com_len, fname);
 }
 
-unsigned int in() { return 0; }
-unsigned int out() { return 0; }
+unsigned int in(int a, int b, int c) { return 0; }
+unsigned int out(int a, int b, int c, int d) { return 0; }
 
 
 
