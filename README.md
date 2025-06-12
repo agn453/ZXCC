@@ -174,7 +174,7 @@ prototypes to silence compiler warnings under macOS (using clang).
 * Only the Windows build was using the FILETRACKER option to keep track
 of the number of CP/M open files.  To enable it under Linux/Unix/macOS
 you need to manually enable it when running ```./configure``` using
-the ```--use-filetracker``` option.
+the ```--with-filetracker``` option.
 
 * To download, build and install this repository under Linux/Unix/macOS
 proceed as follows -
@@ -184,7 +184,7 @@ cd src
 git clone https://github.com/agn453/ZXCC.git
 cd ZXCC
 ./update-configure.sh
-./configure --prefix=$HOME --use-filetracker
+./configure --prefix=$HOME --with-filetracker
 make
 make install
 ```
