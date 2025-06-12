@@ -24,6 +24,7 @@ fi
 
 AC_ARG_WITH(readline,  [  --with-readline         Use GNU Readline for line input (no)])
 AC_ARG_WITH(cpmio,     [  --with-cpmio            Use CPMIO library for output (yes)])
+AC_ARG_WITH(filetracker, [  --with-filetracker      Use FILETRACKER to keep track of CP/M open files (yes)])
 
 dnl Checks for programs.
 AC_PROG_CC
@@ -43,6 +44,12 @@ then
 	CPPFLAGS="$CPPFLAGS -I$SRCROOT/cpmio/include -DUSE_CPMIO"
 	LDFLAGS="$LDFLAGS -L$DSTROOT/cpmio/lib"
 	LSUBDIRS="$LSUBDIRS cpmio"
+fi
+
+dnl Use FILETRACKER to keep track of CP/M open files.
+if test x"$with_filetracker" == xyes
+then
+	CPPFLAGS="$CPPFLAGS -DFILETRACKER=1"
 fi
 
 dnl CPMREDIR isn't conditional, so just add it

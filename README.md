@@ -86,8 +86,8 @@ files. CP/M does not care if you don't close a file open for input -
 whereas under ZXCC the operating system keeps a file handle for
 each open file.  This can have an effect when files are deleted or
 renamed.  There's a symbol FILETRACKER that's been added to the
-configuration file ```config.h```.  Undefine this if you wish to
-restore the previous behaviour.
+configuration file ```winbuild/config-win.h``` for the Windows build.
+Undefine this if you wish to restore the previous behaviour.
 
 * Michal Tomek has added environment variables for BINDIR80,
 INCDIR80 and LIBDIR80 to allow overriding the compiled-in defaults.
@@ -150,7 +150,7 @@ https://github.com/agn453/HI-TECH-Z80-C for details and to update
 to the latest version.
 
 * Jim Burlingame provided updates to the autotools build system to
-allow building under recent versions of Linux/macOS using
+allow building under recent versions of Linux/Unix/macOS using
 the ```./configure ; make ; make install``` method.  This has been
 tested and verified to work with Debian Bookworm (and variants)
 and macOS Sonoma (x86 and arm).
@@ -170,6 +170,35 @@ tool with a new ```zxobjtohex``` wrapper.
 compiler (```*.OVL``` overlays in the BINDIR80 folder and the PL/I
 library ```PLILIB.IRL``` in the LIBDIR80 folder).  Also fixed some missing
 prototypes to silence compiler warnings under macOS (using clang).
+
+* Only the Windows build was using the FILETRACKER option to keep track
+of the number of CP/M open files.  To enable it under Linux/Unix/macOS
+you need to manually enable it when running ```./configure``` using
+the ```--use-filetracker```
+
+* To download, build and install this repository under Linux/Unix/macOS
+proceed as follows -
+
+```
+cd src
+git clone https://github.com/agn453/ZXCC.git
+cd ZXCC
+./update-configure.sh
+./configure --prefix=$HOME --use-filetracker
+make
+make install
+```
+
+This will put the executable programs in your local ```~/bin``` directory;
+the documentation into ```~/share/zxcc/zxcc.doc```; complied object
+libraries for ```libcpmio.a``` and ```libcpmredir.a``` into
+```~/lib```; and create the default CP/M heirarchy under ```~/lib/cpm/bin80```
+(where you place CP/M .COM files etc), ```~/lib/cpm/lib80``` (for your CP/M
+libraries) and ```~/lib/cpm/include80``` (for your CP/M programming include
+files like the system headers for HI-TECH-C).  If you'd rather the files were
+installed in the ```/usr/local``` heirarchy, then omit the ```--prefix=$HOME'''
+from the above ```./configure``` command.
+
 
 
 [^1]: The most recent Zilog Z80 Family CPU User Manual (UM008001-1000)
