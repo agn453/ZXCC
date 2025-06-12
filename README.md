@@ -174,7 +174,7 @@ prototypes to silence compiler warnings under macOS (using clang).
 * Only the Windows build was using the FILETRACKER option to keep track
 of the number of CP/M open files.  To enable it under Linux/Unix/macOS
 you need to manually enable it when running ```./configure``` using
-the ```--use-filetracker```
+the ```--use-filetracker``` option.
 
 * To download, build and install this repository under Linux/Unix/macOS
 proceed as follows -
@@ -189,14 +189,14 @@ make
 make install
 ```
 
-This will put the executable programs in your local ```~/bin``` directory;
+* This will put the executable programs in your local ```~/bin``` directory;
 the documentation into ```~/share/zxcc/zxcc.doc```; complied object
 libraries for ```libcpmio.a``` and ```libcpmredir.a``` into
 ```~/lib```; and create the default CP/M heirarchy under ```~/lib/cpm/bin80```
 (where you place CP/M .COM files etc), ```~/lib/cpm/lib80``` (for your CP/M
 libraries) and ```~/lib/cpm/include80``` (for your CP/M programming include
 files like the system headers for HI-TECH-C).  If you'd rather the files were
-installed in the ```/usr/local``` heirarchy, then omit the ```--prefix=$HOME'''
+installed in the ```/usr/local``` heirarchy, then omit the ```--prefix=$HOME```
 from the above ```./configure``` command.
 
 
