@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.32002.185
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpmio", "cpmio\cpmio.vcxproj", "{ABD2A54C-A592-4B8C-A4C9-5EBB17563C82}"
 EndProject
@@ -14,6 +14,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zxlink", "zxlink\zxlink.vcxproj", "{5AE55866-C465-4B68-AFCB-2E4E1E269FA1}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zxlibr", "zxlibr\zxlibr.vcxproj", "{F6FF14D5-3259-48E5-AAA2-F5BF68E33707}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zxobjtohex", "zxobjtohex\zxobjtohex.vcxproj", "{513A5A07-4B93-412E-8BAE-1B9F32B1828E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zxcc", "zxcc\zxcc.vcxproj", "{157A15BF-1E48-4B2F-80DB-65D97D45E67B}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -85,6 +87,14 @@ Global
 		{157A15BF-1E48-4B2F-80DB-65D97D45E67B}.Release|x64.Build.0 = Release|x64
 		{157A15BF-1E48-4B2F-80DB-65D97D45E67B}.Release|x86.ActiveCfg = Release|Win32
 		{157A15BF-1E48-4B2F-80DB-65D97D45E67B}.Release|x86.Build.0 = Release|Win32
+		{513A5A07-4B93-412E-8BAE-1B9F32B1828E}.Debug|x64.ActiveCfg = Debug|x64
+		{513A5A07-4B93-412E-8BAE-1B9F32B1828E}.Debug|x64.Build.0 = Debug|x64
+		{513A5A07-4B93-412E-8BAE-1B9F32B1828E}.Debug|x86.ActiveCfg = Debug|Win32
+		{513A5A07-4B93-412E-8BAE-1B9F32B1828E}.Debug|x86.Build.0 = Debug|Win32
+		{513A5A07-4B93-412E-8BAE-1B9F32B1828E}.Release|x64.ActiveCfg = Release|x64
+		{513A5A07-4B93-412E-8BAE-1B9F32B1828E}.Release|x64.Build.0 = Release|x64
+		{513A5A07-4B93-412E-8BAE-1B9F32B1828E}.Release|x86.ActiveCfg = Release|Win32
+		{513A5A07-4B93-412E-8BAE-1B9F32B1828E}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

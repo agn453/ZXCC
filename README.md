@@ -199,6 +199,12 @@ files like the system headers for HI-TECH-C).  If you'd rather the files were
 installed in the ```/usr/local``` heirarchy, then omit the ```--prefix=$HOME```
 from the above ```./configure``` command.
 
+* I've refreshed the Windows Build files in ```winbuild``` and included
+the missing project build files for the ```zxobjtohex.exe``` target.
+In addtion, I backported the Visual Studio ```winbuild/wzxcc.sln``` solution
+file to support older versions back to at least Visual Studion 2015 which
+can produce Windows 10 binaries (both x86 and x86_64).
+
 
 
 [^1]: The most recent Zilog Z80 Family CPU User Manual (UM008001-1000)
@@ -209,4 +215,4 @@ Andreas Gerlich) at http://www.mathematik.uni-ulm.de/users/ag/yaze-ag
 
 --
 
-Tony Nicholson, Thursday 12-Jun-2025
+Tony Nicholson, Tuesday 17-Jun-2025
