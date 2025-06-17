@@ -202,7 +202,7 @@ from the above ```./configure``` command.
 * I've refreshed the Windows Build files in ```winbuild``` and included
 the missing project build files for the ```zxobjtohex.exe``` target.
 In addtion, I backported the Visual Studio ```winbuild/wzxcc.sln``` solution
-file to support older versions back to at least Visual Studion 2015 which
+file to support older versions back to at least Visual Studio 2015 which
 can produce Windows 10 binaries (both x86 and x86_64).
 
 
@@ -210,8 +210,8 @@ can produce Windows 10 binaries (both x86 and x86_64).
 [^1]: The most recent Zilog Z80 Family CPU User Manual (UM008001-1000)
 can be found at http://www.zilog.com/docs/z80/z80cpu_um.pdf
 
-[^2]: You'll find the final version of yaze-ag 2.51.1 (as curated by
-Andreas Gerlich) at http://www.mathematik.uni-ulm.de/users/ag/yaze-ag
+[^2]: You'll find the final version of yaze-ag 2.51.3 (as curated by
+Andreas Gerlich) at https://agl.yaze-ag.de/
 
 --
 
