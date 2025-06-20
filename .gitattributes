@@ -7,3 +7,10 @@ LICENSE text eol=crlf
 *.h text eol=crlf linguist-language=C
 *.as text eol=crlf linguist-language=Assembly
 *.z80 text eol=crlf linguist-language=Assembly
+*.cfg text eol=crlf
+*.cmd text eol=crlf
+*.filters text eol=crlf
+*.proj text eol=crlf
+*.sln text eol=crlf
+*.vcxproj text eol=crlf
+

@@ -24,7 +24,7 @@ fi
 
 AC_ARG_WITH(readline,  [  --with-readline         Use GNU Readline for line input (no)])
 AC_ARG_WITH(cpmio,     [  --with-cpmio            Use CPMIO library for output (yes)])
-AC_ARG_WITH(filetracker, [  --with-filetracker      Use FILETRACKER to keep track of CP/M open files (yes)])
+AC_ARG_WITH(filetracker, [  --with-filetracker      Use FILETRACKER to keep track of CP/M open files (no)])
 
 dnl Checks for programs.
 AC_PROG_CC

@@ -9,6 +9,14 @@ AM_INIT_AUTOMAKE
 AC_CONFIG_HEADERS([config.h])
 LT_INIT
 
+AC_ARG_WITH(filetracker, [  --with-filetracker      Use FILETRACKER to keep track of CP/M open files (no)])
+
+dnl Use FILETRACKER to keep track of CP/M open files.
+if test x"$with_filetracker" == xyes
+then
+	CPPFLAGS="$CPPFLAGS -DFILETRACKER=1"
+fi
+
 dnl Checks for programs.
 AC_PROG_CC
 

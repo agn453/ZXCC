@@ -81,7 +81,9 @@
  * Please let me know if the situation arises.
 */
 /* windows needs to use file tracking, for unix/linux it is optional */
-#if defined(_WIN32) || defined(FILETRACKER)
+
+#if defined(FILETRACKER)
+
 typedef struct _track {
 	struct _track* next;
 	int handle;

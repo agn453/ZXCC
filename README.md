@@ -201,10 +201,12 @@ from the above ```./configure``` command.
 
 * I've refreshed the Windows Build files in ```winbuild``` and included
 the missing project build files for the ```zxobjtohex.exe``` target.
-In addtion, I backported the Visual Studio ```winbuild/wzxcc.sln``` solution
+In addition, I backported the Visual Studio ```winbuild/wzxcc.sln``` solution
 file to support older versions back to at least Visual Studio 2015 which
-can produce Windows 10 binaries (both x86 and x86_64).
+can produce Windows binaries (both x86 and x86_64).
 
+* Fixed Linux/Unix/macOS build autotools configuration when both
+FILETRACKER and debugging is enabled.
 
 
 [^1]: The most recent Zilog Z80 Family CPU User Manual (UM008001-1000)
@@ -215,4 +217,4 @@ Andreas Gerlich) at https://agl.yaze-ag.de/
 
 --
 
-Tony Nicholson, Tuesday 17-Jun-2025
+Tony Nicholson, Friday 20-Jun-2025
