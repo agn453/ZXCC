@@ -381,10 +381,7 @@ int main(int ac, char **av)
     RAM[0xFEA8] = 0x01;		/* UK date format */
     RAM[0xFEAF] = 0x0F;		/* CCP drive */
 
-#ifdef USE_CPMIO
-    RAM[0xFEB6] = cpm_term_direct(CPM_TERM_WIDTH,  -1);
-    RAM[0xFEB8] = cpm_term_direct(CPM_TERM_HEIGHT, -1);
-#else
+#ifndef USE_CPMIO
     RAM[0xFEB6] = 79;
     RAM[0xFEB8] = 23;
 #endif
@@ -405,6 +402,12 @@ int main(int ac, char **av)
 
 #ifdef USE_CPMIO
     cpm_scr_init(); deinit_term = 1;
+    {
+        int w = cpm_term_direct(CPM_TERM_WIDTH, -1);
+        int h = cpm_term_direct(CPM_TERM_HEIGHT, -1);
+        RAM[0xFEB6] = (w > 0 && w <= 256) ? w - 1 : 79;
+        RAM[0xFEB8] = (h > 0 && h <= 256) ? h - 1 : 23;
+    }
 #endif
 #ifdef USE_CPMGSX
     gsx_init();	deinit_gsx = 1;
