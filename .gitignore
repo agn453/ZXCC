@@ -19,6 +19,7 @@ bin/zxcc
 bin/zxlibr
 bin/zxlink
 bin/zxobjtohex
+bin/zxcpm
 
 # libraries
 cpmio/lib/libcpmio.a
