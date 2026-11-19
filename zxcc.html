@@ -115,7 +115,24 @@ example, you would type <blockquote>zxc hello.c</blockquote> instead of
 for <em>zxcc</em>, and then invoking <em>zxcc</em>. 
 
 <P>There are no front-end programs for the CP/M build tools; you will have to
-enter arguments to these in the zxcc format given below.
+enter arguments to these in the <TT>zxcc</TT> format given below or use the wrapper
+<TT>zxcpm</TT>, that will prepare the argument format for you.
+
+<h3>Generic program wrapper zxcpm</h3>
+
+<p>The wrapper <TT>zxcpm</TT> hides the argument preparation from the user.
+Instead of writing in <TT>zxcc</TT> syntax:
+<BLOCKQUOTE><TT>
+	zxcc z80asm -filename -/h
+</TT></BLOCKQUOTE>
+you can use the standard CP/M syntax and prepend <TT>zxcpm</TT>
+<BLOCKQUOTE><TT>
+	zxcpm z80asm filename /h
+</TT></BLOCKQUOTE>
+This syntax is identical to the call of other CP/M emulators, e.g.
+<BLOCKQUOTE><TT>
+    tnylpo z80asm filename /h
+</TT></BLOCKQUOTE>
 
 <H3>Filenames</H3>
 
@@ -173,6 +190,20 @@ would pass these arguments to foo.com:
 
 <P>The other programs are merely wrappers that convert their command lines
 into the form required by <em>zxcc</em>.
+<P>Some CP/M programs cannot process the parsed filenames with the leading CP/M
+drive letter; for example, <TT>z80asm</TT> encodes the drive letters for input, output, and listings into the three extension letters instead. For these programs you can use
+the generic program wrapper <TT>zxcpm</TT>, it just translates this call
+<BLOCKQUOTE><TT>
+	zxcpm comfile.com arg1 arg2 arg3 ...
+</TT></BLOCKQUOTE>
+into
+<BLOCKQUOTE><TT>
+	zxcc comfile.com -arg1 -arg2 -arg3 ...
+</TT></BLOCKQUOTE>
+<TT>zxcc</TT> now copies <TT>" arg1 arg2 arg3 ..."</TT> (concatenated with spaces)
+into the default DMA memory at 0x80, parses <TT>arg1</TT> and <TT>arg2</TT>,
+translates them to upper-case and puts them into <TT>FCB1</TT> at 0x5C and
+<TT>FCB2</TT> at 0x6C. Finally it executes the CP/M <TT>comfile.com</TT>.
 
 <h2>Errors</h2>
 

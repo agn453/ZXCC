@@ -118,7 +118,23 @@ Using zxcc
    suitable for zxcc, and then invoking zxcc.
 
    There are no front-end programs for the CP/M build tools; you will have
-   to enter arguments to these in the zxcc format given below.
+   to enter arguments to these in the zxcc format given below or use the
+   wrapper zxcpm, that will prepare the argument format for you.
+
+  Generic program wrapper zxcpm
+
+   The wrapper zxcpm hides the argument preparation from the user. Instead
+   of writing in zxcc syntax:
+
+     zxcc z80asm -filename -/h
+
+   you can use the standard CP/M syntax and prepend zxcpm
+
+     zxcpm z80asm filename /h
+
+   This syntax is identical to the call of other CP/M emulators, e.g.
+
+     tnylpo z80asm filename /h
 
   Filenames
 
@@ -178,6 +194,23 @@ Technical
    The other programs are merely wrappers that convert their command lines
    into the form required by zxcc.
 
+   Some CP/M programs cannot process the parsed filenames with the leading
+   CP/M drive letter; for example, z80asm encodes the drive letters for
+   input, output, and listings into the three extension letters instead.
+   For these programs you can use the generic program wrapper zxcpm, it
+   just translates this call
+
+     zxcpm comfile.com arg1 arg2 arg3 ...
+
+   into
+
+     zxcc comfile.com -arg1 -arg2 -arg3 ...
+
+   zxcc now copies " arg1 arg2 arg3 ..." (concatenated with spaces) into
+   the default DMA memory at 0x80, parses arg1 and arg2, translates them
+   to upper-case and puts them into FCB1 at 0x5C and FCB2 at 0x6C. Finally
+   it executes the CP/M comfile.com.
+
 Errors
 
    Any errors raised by the zxcc runtime system will be prefixed with
@@ -203,7 +236,7 @@ Acknowledgements
 
     John Elliott, 28 March 2003
 
-References
+Verweise
 
    1. http://www.nenie.org/cpcip/index.html#zmac
    2. http://www.hitech.com.au/
