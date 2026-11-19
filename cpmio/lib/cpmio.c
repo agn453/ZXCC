@@ -21,6 +21,9 @@
 
 #include "cpmio_i.h"
 #include "termcore.h"
+#ifndef _MSC_VER
+#include <sys/ioctl.h>
+#endif
 
 
 static char cpm_waiting;	/* Character waiting for conin */
@@ -314,6 +317,15 @@ int termios_term(int func, int param)
 		putchar(param);
 		return 1;
 	}
+#ifndef _MSC_VER
+	if (func == CPM_TERM_WIDTH || func == CPM_TERM_HEIGHT)
+	{
+		struct winsize ws;
+		if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == 0 &&
+		    ws.ws_col > 0 && ws.ws_row > 0)
+			return (func == CPM_TERM_WIDTH) ? ws.ws_col : ws.ws_row;
+	}
+#endif
 	return 0;
 }
 
