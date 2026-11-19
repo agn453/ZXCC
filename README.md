@@ -212,6 +212,23 @@ FILETRACKER and debugging is enabled.
 a fix the the cpmredir routines to track re-use of a CP/M file control
 block - resolving issue #40.
 
+* Martin Homuth-Rosemann has submitted a fix to CP/M 3 SCB terminal size
+reporting and contributed a new ```zxcpm``` helper tool that lets you
+run classic CP/M programs from the shell prompt (Linux/macOS) by
+passing command line parameters into the CP/M command line buffer
+at 80h (uppercases them and sets the default file control blocks
+like the CP/M command processor does).  This works for both Linux and
+macOS - but I since I no longer have a Windows setup with Visual Studio
+I am unable to add this to the Windows build solution files. (If you
+can and are able to submit a pull request with this, I can merge this
+into the repository).
+
+* The macOS build of ```zxcc``` was failing due to an undefined reference
+to _NSGetExecutablePath() with updated macOS clang compiler (version 21.0.0
+under macOS Golden Gate ARM64 and version 17.0.0 under macOS Sequioa x86_64).
+Added the required include file to ```zxcc.h```.
+
+
 [^1]: The most recent Zilog Z80 Family CPU User Manual (UM008001-1000)
 can be found at http://www.zilog.com/docs/z80/z80cpu_um.pdf
 
@@ -220,4 +237,4 @@ Andreas Gerlich) at https://agl.yaze-ag.de/
 
 --
 
-Tony Nicholson, Sunday 10-Aug-2025
+Tony Nicholson, Friday 20-Nov-2026
