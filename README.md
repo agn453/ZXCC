@@ -218,7 +218,7 @@ run classic CP/M programs from the shell prompt (Linux/macOS) by
 passing command line parameters into the CP/M command line buffer
 at 80h (uppercases them and sets the default file control blocks
 like the CP/M command processor does).  This works for both Linux and
-macOS - but I since I no longer have a Windows setup with Visual Studio
+macOS - but since I no longer have a Windows setup with Visual Studio
 I am unable to add this to the Windows build solution files. (If you
 can and are able to submit a pull request with this, I can merge this
 into the repository).
