@@ -61,6 +61,9 @@ extern char incdir80[];
 #ifdef __MSDOS
 #include <dos.h>
 #endif
+#ifdef __APPLE__
+#include <mach-o/dyld.h>
+#endif
 
 /* Library includes */
 
